@@ -9,22 +9,30 @@ Complements [ADR-001](../docs/adr/001-property-graph-algorithm-library.md).
 - Toolchain: gcc 11.5, cmake/ninja (user-installed), system OpenSSL 3.5.1.
 - Host: 32 cores, 62 GiB RAM, Linux. Build: `make` (release). Tests: `build/release/test/unittest <path>`.
 
-## Algorithm coverage (16 functions)
+## Algorithm coverage (28 new functions)
 
 All exposed as scalar + table functions over the in-memory CSR, each with a
-sqllogictest using hand-derived oracles on a small property graph.
+sqllogictest using hand-derived oracles on a small property graph. Three
+bind-replace SELECT patterns back them: per-vertex `CreateSelectNode`,
+per-vertex-with-parameter `CreateParamSelectNode`, and pairwise
+`CreatePairwiseSelectNode` (utils).
 
 | Family | Algorithms |
 |---|---|
-| Centrality | degree, closeness, betweenness (Brandes), harmonic, eigenvector, Katz, ArticleRank, HITS (hub + authority) |
-| Community | weakly/strongly connected components, label propagation, k-core decomposition, triangle count, global clustering coefficient, local clustering coefficient |
-| Ordering | topological sort (Kahn) |
+| Centrality | degree, in-degree, out-degree, closeness, harmonic, betweenness (Brandes), eigenvector, Katz, ArticleRank, HITS (hub + authority), personalized PageRank |
+| Community | strongly connected components, label propagation, Louvain, k-core decomposition, triangle count, global clustering coefficient |
+| Similarity (pairwise) | Jaccard, cosine, overlap, common-neighbors, Adamic-Adar, preferential attachment, resource allocation |
+| Pathfinding / ordering | single-source shortest path (BFS), topological sort (Kahn) |
 
-Deferred (require new table-function infrastructure — pair output / parameters /
-embeddings, flagged as future work in ADR-001): pairwise similarity (Jaccard,
-cosine, overlap, Adamic-Adar, common-neighbors, preferential attachment,
-resource allocation), parameterized pathfinding (personalized PageRank, Dijkstra
-SSSP, A*, Yen K-shortest, MST), and node embeddings (FastRP, Node2Vec/DeepWalk).
+Pairwise similarity emits O(V²) node pairs (a<b) by design — intended for
+small/medium graphs or filtered use. Parameterized functions take the source
+vertex as a 4th table-function argument, e.g. `single_source_shortest_path(pg, v, e, 0)`.
+
+Genuinely deferred (need substantially more than a new algorithm file): A*
+(needs a spatial heuristic / coordinates), Yen K-shortest and MST (edge-list
+output, not per-vertex), Leiden (multi-level refinement), and node embeddings
+FastRP / Node2Vec / DeepWalk (vector outputs + RNG / skip-gram training, not
+deterministically testable). These remain future work per ADR-001.
 
 ## Memory limits
 
