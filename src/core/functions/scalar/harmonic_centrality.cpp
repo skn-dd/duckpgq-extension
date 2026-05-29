@@ -1,6 +1,6 @@
 #include "duckdb/planner/expression/bound_function_expression.hpp"
 #include "duckpgq/common.hpp"
-#include "duckpgq/core/functions/function_data/closeness_centrality_function_data.hpp"
+#include "duckpgq/core/functions/function_data/harmonic_centrality_function_data.hpp"
 #include <duckpgq/core/functions/scalar.hpp>
 #include <duckpgq/core/utils/duckpgq_utils.hpp>
 
@@ -8,9 +8,9 @@
 
 namespace duckdb {
 
-static void ClosenessCentralityFunction(DataChunk &args, ExpressionState &state, Vector &result) {
+static void HarmonicCentralityFunction(DataChunk &args, ExpressionState &state, Vector &result) {
 	auto &func_expr = state.expr.Cast<BoundFunctionExpression>();
-	auto &info = func_expr.bind_info->Cast<ClosenessCentralityFunctionData>();
+	auto &info = func_expr.bind_info->Cast<HarmonicCentralityFunctionData>();
 	auto duckpgq_state = GetDuckPGQState(info.context);
 
 	// Locate the CSR representation of the graph
@@ -20,29 +20,30 @@ static void ClosenessCentralityFunction(DataChunk &args, ExpressionState &state,
 	}
 
 	if (!(csr_entry->second->initialized_v && csr_entry->second->initialized_e)) {
-		throw ConstraintException("Need to initialize CSR before computing closeness centrality.");
+		throw ConstraintException("Need to initialize CSR before computing harmonic centrality.");
 	}
 
 	auto *v = reinterpret_cast<int64_t *>(duckpgq_state->csr_list[info.csr_id]->v);
 	vector<int64_t> &e = duckpgq_state->csr_list[info.csr_id]->e;
 	size_t v_size = duckpgq_state->csr_list[info.csr_id]->vsize;
-	CheckAlgorithmMemoryBudget(info.context, (idx_t)v_size * sizeof(double) * 2, "closeness_centrality");
+	CheckAlgorithmMemoryBudget(info.context, (idx_t)v_size * sizeof(double) * 2, "harmonic_centrality");
 
 	// State initialization and whole-graph computation (only once)
 	if (!info.state_initialized) {
 		std::lock_guard<std::mutex> guard(info.state_lock); // Thread safety
 		if (!info.state_initialized) {
-			info.closeness.resize(v_size, 0.0);
+			info.harmonic.resize(v_size, 0.0);
 
-			for (size_t source = 0; source < v_size; source++) {
+			// Only iterate over real vertices as BFS sources. vsize = num_vertices + 2,
+			// so the last two slots are padding and must be skipped.
+			for (size_t source = 0; source + 2 < v_size; source++) {
 				// BFS over the undirected CSR from `source`
 				vector<int64_t> dist(v_size, -1);
 				std::queue<int64_t> frontier;
 				dist[source] = 0;
 				frontier.push(static_cast<int64_t>(source));
 
-				int64_t reachable = 0; // vertices reachable excluding source
-				int64_t sum_distances = 0;
+				double harmonic_sum = 0.0;
 
 				while (!frontier.empty()) {
 					int64_t u = frontier.front();
@@ -55,15 +56,13 @@ static void ClosenessCentralityFunction(DataChunk &args, ExpressionState &state,
 						int64_t neighbor = e[j];
 						if (dist[neighbor] == -1) {
 							dist[neighbor] = dist[u] + 1;
-							reachable++;
-							sum_distances += dist[neighbor];
+							harmonic_sum += 1.0 / static_cast<double>(dist[neighbor]);
 							frontier.push(neighbor);
 						}
 					}
 				}
 
-				info.closeness[source] =
-				    (sum_distances > 0) ? static_cast<double>(reachable) / static_cast<double>(sum_distances) : 0.0;
+				info.harmonic[source] = harmonic_sum;
 			}
 
 			info.state_initialized = true;
@@ -81,7 +80,7 @@ static void ClosenessCentralityFunction(DataChunk &args, ExpressionState &state,
 	result.SetVectorType(VectorType::FLAT_VECTOR);
 	auto result_data = FlatVector::GetData<double_t>(result);
 
-	// Output the closeness value corresponding to each source ID in the DataChunk
+	// Output the harmonic value corresponding to each source ID in the DataChunk
 	for (idx_t i = 0; i < args.size(); i++) {
 		auto id_pos = vdata_src.sel->get_index(i);
 		if (!vdata_src.validity.RowIsValid(id_pos)) {
@@ -93,7 +92,7 @@ static void ClosenessCentralityFunction(DataChunk &args, ExpressionState &state,
 			result_validity.SetInvalid(i);
 			continue;
 		}
-		result_data[i] = info.closeness[node_id];
+		result_data[i] = info.harmonic[node_id];
 	}
 
 	duckpgq_state->csr_to_delete.insert(info.csr_id);
@@ -102,10 +101,10 @@ static void ClosenessCentralityFunction(DataChunk &args, ExpressionState &state,
 //------------------------------------------------------------------------------
 // Register functions
 //------------------------------------------------------------------------------
-void CoreScalarFunctions::RegisterClosenessCentralityScalarFunction(ExtensionLoader &loader) {
-	loader.RegisterFunction(ScalarFunction("closeness_centrality", {LogicalType::INTEGER, LogicalType::BIGINT},
-	                                       LogicalType::DOUBLE, ClosenessCentralityFunction,
-	                                       ClosenessCentralityFunctionData::ClosenessCentralityBind));
+void CoreScalarFunctions::RegisterHarmonicCentralityScalarFunction(ExtensionLoader &loader) {
+	loader.RegisterFunction(ScalarFunction("harmonic_centrality", {LogicalType::INTEGER, LogicalType::BIGINT},
+	                                       LogicalType::DOUBLE, HarmonicCentralityFunction,
+	                                       HarmonicCentralityFunctionData::HarmonicCentralityBind));
 }
 
 } // namespace duckdb

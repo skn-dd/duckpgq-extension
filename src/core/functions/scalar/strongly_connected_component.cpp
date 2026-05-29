@@ -26,6 +26,7 @@ static void StronglyConnectedComponentFunction(DataChunk &args, ExpressionState 
 	auto *v = reinterpret_cast<int64_t *>(duckpgq_state->csr_list[info.csr_id]->v);
 	vector<int64_t> &e = duckpgq_state->csr_list[info.csr_id]->e;
 	size_t v_size = duckpgq_state->csr_list[info.csr_id]->vsize;
+	CheckAlgorithmMemoryBudget(info.context, (idx_t)v_size * sizeof(int64_t) * 7, "strongly_connected_component");
 
 	// Compute the strongly connected components once and cache the result.
 	if (!info.state_initialized) {

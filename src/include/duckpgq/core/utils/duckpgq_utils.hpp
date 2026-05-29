@@ -9,6 +9,13 @@ namespace duckdb {
 
 // Function to get DuckPGQState from ClientContext
 shared_ptr<DuckPGQState> GetDuckPGQState(ClientContext &context, bool throw_error_not_found = false);
+
+// Honors DuckDB's configured memory_limit: throws OutOfMemoryException with a
+// clear, actionable message when an algorithm's estimated working-set
+// allocation would exceed the buffer manager's max memory. Algorithms call this
+// before allocating their O(V) / O(V^2) state so that large graphs fail
+// gracefully instead of triggering the OOM killer.
+void CheckAlgorithmMemoryBudget(ClientContext &context, idx_t estimated_bytes, const string &algorithm_name);
 CreatePropertyGraphInfo *GetPropertyGraphInfo(const shared_ptr<DuckPGQState> &duckpgq_state, const string &pg_name);
 shared_ptr<PropertyGraphTable> ValidateSourceNodeAndEdgeTable(CreatePropertyGraphInfo *pg_info,
                                                               const std::string &node_table,

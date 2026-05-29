@@ -11,6 +11,13 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/strongly_connected_component.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/label_propagation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/eigenvector_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/harmonic_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/k_core_decomposition.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eccentricity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/article_rank.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/katz_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hits.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/global_clustering_coefficient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength_bidirectional.cpp

@@ -1,6 +1,7 @@
 #include "duckpgq/core/utils/duckpgq_utils.hpp"
 #include "duckpgq/common.hpp"
 #include "duckdb/parser/statement/copy_statement.hpp"
+#include "duckdb/storage/buffer_manager.hpp"
 
 #include "duckpgq/core/functions/table/describe_property_graph.hpp"
 #include "duckpgq/core/functions/table/drop_property_graph.hpp"
@@ -27,6 +28,22 @@ shared_ptr<DuckPGQState> GetDuckPGQState(ClientContext &context, bool throw_not_
 	auto connection = make_shared_ptr<Connection>(*context.db);
 	state->RetrievePropertyGraphs(connection);
 	return state;
+}
+
+void CheckAlgorithmMemoryBudget(ClientContext &context, idx_t estimated_bytes, const string &algorithm_name) {
+	auto &buffer_manager = BufferManager::GetBufferManager(context);
+	idx_t max_memory = buffer_manager.GetMaxMemory();
+	// max_memory == 0 (or the sentinel max) means effectively unlimited.
+	if (max_memory == 0 || max_memory == DConstants::INVALID_INDEX) {
+		return;
+	}
+	if (estimated_bytes > max_memory) {
+		throw OutOfMemoryException(
+		    "DuckPGQ %s needs approximately %s of working memory, which exceeds the configured memory_limit of %s. "
+		    "Increase memory_limit (e.g. SET memory_limit='8GB') or run on a smaller graph.",
+		    algorithm_name, StringUtil::BytesToHumanReadableString(estimated_bytes),
+		    StringUtil::BytesToHumanReadableString(max_memory));
+	}
 }
 
 // Function to get PropertyGraphInfo from DuckPGQState

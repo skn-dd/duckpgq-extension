@@ -2,6 +2,13 @@ set(EXTENSION_SOURCES
     ${EXTENSION_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/cheapest_path_length_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/degree_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/harmonic_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/k_core_decomposition_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eccentricity_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/article_rank_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/katz_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hits_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/global_clustering_coefficient_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality_function_data.cpp

@@ -1,8 +1,8 @@
 #include "duckdb/planner/expression/bound_function_expression.hpp"
 #include "duckpgq/common.hpp"
-#include "duckpgq/core/functions/function_data/eigenvector_centrality_function_data.hpp"
+#include "duckpgq/core/functions/function_data/katz_centrality_function_data.hpp"
 #include <duckpgq/core/functions/scalar.hpp>
-#include <duckpgq/core/functions/table/eigenvector_centrality.hpp>
+#include <duckpgq/core/functions/table/katz_centrality.hpp>
 #include <duckpgq/core/utils/duckpgq_bitmap.hpp>
 #include <duckpgq/core/utils/duckpgq_utils.hpp>
 
@@ -10,9 +10,9 @@
 
 namespace duckdb {
 
-static void EigenvectorCentralityFunction(DataChunk &args, ExpressionState &state, Vector &result) {
+static void KatzCentralityFunction(DataChunk &args, ExpressionState &state, Vector &result) {
 	auto &func_expr = state.expr.Cast<BoundFunctionExpression>();
-	auto &info = func_expr.bind_info->Cast<EigenvectorCentralityFunctionData>();
+	auto &info = func_expr.bind_info->Cast<KatzCentralityFunctionData>();
 	auto duckpgq_state = GetDuckPGQState(info.context);
 
 	// Locate the CSR representation of the graph
@@ -22,17 +22,19 @@ static void EigenvectorCentralityFunction(DataChunk &args, ExpressionState &stat
 	}
 
 	if (!(csr_entry->second->initialized_v && csr_entry->second->initialized_e)) {
-		throw ConstraintException("Need to initialize CSR before computing eigenvector centrality.");
+		throw ConstraintException("Need to initialize CSR before computing katz centrality.");
 	}
 
 	auto *v = reinterpret_cast<int64_t *>(duckpgq_state->csr_list[info.csr_id]->v);
 	vector<int64_t> &e = duckpgq_state->csr_list[info.csr_id]->e;
 	size_t v_size = duckpgq_state->csr_list[info.csr_id]->vsize;
-	CheckAlgorithmMemoryBudget(info.context, (idx_t)v_size * sizeof(double) * 3, "eigenvector_centrality");
+	CheckAlgorithmMemoryBudget(info.context, (idx_t)v_size * sizeof(double) * 2, "katz_centrality");
 
 	// State initialization (only once)
 	if (!info.state_initialized) {
-		info.centrality.resize(v_size, 1.0 / static_cast<double>(v_size)); // Initial value for each node
+		info.centrality.resize(v_size, 0.0); // Initial value for each node
+		info.alpha = 0.1;
+		info.beta = 1.0;
 		info.max_iterations = 100;
 		info.convergence_threshold = 1e-8;
 		info.state_initialized = true;
@@ -49,33 +51,21 @@ static void EigenvectorCentralityFunction(DataChunk &args, ExpressionState &stat
 			while (info.iteration_count < info.max_iterations && !info.converged) {
 				fill(next.begin(), next.end(), 0.0);
 
-				// y[u] = sum over neighbors n of u of x[n]
-				for (size_t i = 0; i < v_size; i++) {
-					auto start_edge = v[i];
-					auto end_edge = (i + 1 < v_size) ? v[i + 1] : static_cast<int64_t>(e.size());
+				// x_{t+1}[u] = alpha * sum over neighbors n of u of x_t[n] + beta
+				for (size_t u = 0; u + 2 < v_size; u++) {
+					auto start_edge = v[u];
+					auto end_edge = (u + 1 < v_size) ? v[u + 1] : static_cast<int64_t>(e.size());
 					double_t sum = 0.0;
 					for (int64_t j = start_edge; j < end_edge; j++) {
 						sum += info.centrality[e[j]];
 					}
-					next[i] = sum;
+					next[u] = info.alpha * sum + info.beta;
 				}
 
-				// L2-normalize y (guard against zero norm)
-				double_t norm = 0.0;
-				for (size_t i = 0; i < v_size; i++) {
-					norm += next[i] * next[i];
-				}
-				norm = std::sqrt(norm);
-				if (norm > 0.0) {
-					for (size_t i = 0; i < v_size; i++) {
-						next[i] /= norm;
-					}
-				}
-
-				// Check convergence
+				// Check convergence (max delta over real vertices)
 				double_t max_delta = 0.0;
-				for (size_t i = 0; i < v_size; i++) {
-					max_delta = std::max(max_delta, std::abs(next[i] - info.centrality[i]));
+				for (size_t u = 0; u + 2 < v_size; u++) {
+					max_delta = std::max(max_delta, std::abs(next[u] - info.centrality[u]));
 				}
 
 				info.centrality.swap(next);
@@ -84,6 +74,19 @@ static void EigenvectorCentralityFunction(DataChunk &args, ExpressionState &stat
 					info.converged = true;
 				}
 			}
+
+			// L2-normalize the converged vector (guard against zero norm)
+			double_t norm = 0.0;
+			for (size_t u = 0; u + 2 < v_size; u++) {
+				norm += info.centrality[u] * info.centrality[u];
+			}
+			norm = std::sqrt(norm);
+			if (norm > 0.0) {
+				for (size_t u = 0; u + 2 < v_size; u++) {
+					info.centrality[u] /= norm;
+				}
+			}
+
 			info.converged = true;
 		}
 	}
@@ -120,10 +123,10 @@ static void EigenvectorCentralityFunction(DataChunk &args, ExpressionState &stat
 //------------------------------------------------------------------------------
 // Register functions
 //------------------------------------------------------------------------------
-void CoreScalarFunctions::RegisterEigenvectorCentralityScalarFunction(ExtensionLoader &loader) {
-	loader.RegisterFunction(ScalarFunction("eigenvector_centrality", {LogicalType::INTEGER, LogicalType::BIGINT},
-	                                       LogicalType::DOUBLE, EigenvectorCentralityFunction,
-	                                       EigenvectorCentralityFunctionData::EigenvectorCentralityBind));
+void CoreScalarFunctions::RegisterKatzCentralityScalarFunction(ExtensionLoader &loader) {
+	loader.RegisterFunction(ScalarFunction("katz_centrality", {LogicalType::INTEGER, LogicalType::BIGINT},
+	                                       LogicalType::DOUBLE, KatzCentralityFunction,
+	                                       KatzCentralityFunctionData::KatzCentralityBind));
 }
 
 } // namespace duckdb
