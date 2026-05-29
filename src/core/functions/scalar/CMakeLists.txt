@@ -4,6 +4,13 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/csr_creation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/csr_deletion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/csr_get_w_type.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/degree_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/strongly_connected_component.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/label_propagation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eigenvector_centrality.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength_bidirectional.cpp

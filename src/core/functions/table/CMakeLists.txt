@@ -1,6 +1,13 @@
 set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/create_property_graph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/describe_property_graph.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/degree_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/strongly_connected_component.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/label_propagation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eigenvector_centrality.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/drop_property_graph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/local_clustering_coefficient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/match.cpp

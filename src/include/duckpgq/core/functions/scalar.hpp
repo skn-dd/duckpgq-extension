@@ -7,6 +7,13 @@ struct CoreScalarFunctions {
 	static void Register(ExtensionLoader &loader) {
 		RegisterCheapestPathLengthScalarFunction(loader);
 		RegisterCSRCreationScalarFunctions(loader);
+		RegisterDegreeCentralityScalarFunction(loader);
+		RegisterTriangleCountScalarFunction(loader);
+		RegisterClosenessCentralityScalarFunction(loader);
+		RegisterBetweennessCentralityScalarFunction(loader);
+		RegisterStronglyConnectedComponentScalarFunction(loader);
+		RegisterLabelPropagationScalarFunction(loader);
+		RegisterEigenvectorCentralityScalarFunction(loader);
 		RegisterCSRDeletionScalarFunction(loader);
 		RegisterGetCSRWTypeScalarFunction(loader);
 		RegisterIterativeLengthScalarFunction(loader);
@@ -22,6 +29,13 @@ struct CoreScalarFunctions {
 private:
 	static void RegisterCheapestPathLengthScalarFunction(ExtensionLoader &loader);
 	static void RegisterCSRCreationScalarFunctions(ExtensionLoader &loader);
+	static void RegisterDegreeCentralityScalarFunction(ExtensionLoader &loader);
+	static void RegisterTriangleCountScalarFunction(ExtensionLoader &loader);
+	static void RegisterClosenessCentralityScalarFunction(ExtensionLoader &loader);
+	static void RegisterBetweennessCentralityScalarFunction(ExtensionLoader &loader);
+	static void RegisterStronglyConnectedComponentScalarFunction(ExtensionLoader &loader);
+	static void RegisterLabelPropagationScalarFunction(ExtensionLoader &loader);
+	static void RegisterEigenvectorCentralityScalarFunction(ExtensionLoader &loader);
 	static void RegisterCSRDeletionScalarFunction(ExtensionLoader &loader);
 	static void RegisterGetCSRWTypeScalarFunction(ExtensionLoader &loader);
 	static void RegisterIterativeLengthScalarFunction(ExtensionLoader &loader);

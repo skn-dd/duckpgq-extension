@@ -1,6 +1,13 @@
 set(EXTENSION_SOURCES
     ${EXTENSION_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/cheapest_path_length_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/degree_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/strongly_connected_component_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/label_propagation_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eigenvector_centrality_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterative_length_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/local_clustering_coefficient_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pagerank_function_data.cpp
