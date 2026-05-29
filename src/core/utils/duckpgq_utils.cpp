@@ -9,7 +9,9 @@
 #include "duckdb/parser/tableref/joinref.hpp"
 #include "duckdb/parser/tableref/basetableref.hpp"
 #include "duckdb/parser/expression/columnref_expression.hpp"
+#include "duckdb/parser/expression/comparison_expression.hpp"
 #include "duckdb/parser/tableref/subqueryref.hpp"
+#include "duckpgq/core/utils/compressed_sparse_row.hpp"
 
 namespace duckdb {
 
@@ -108,6 +110,91 @@ unique_ptr<SelectNode> CreateSelectNode(const shared_ptr<PropertyGraphTable> &ed
 	cross_join_ref->right = std::move(temp_cte_select_subquery);
 
 	select_node->from_table = std::move(cross_join_ref);
+
+	return select_node;
+}
+
+unique_ptr<SelectNode> CreateParamSelectNode(const shared_ptr<PropertyGraphTable> &edge_pg_entry,
+                                             const string &function_name, const string &function_alias,
+                                             const Value &extra_arg) {
+	auto select_node = make_uniq<SelectNode>();
+	std::vector<unique_ptr<ParsedExpression>> select_expression;
+
+	select_expression.emplace_back(
+	    make_uniq<ColumnRefExpression>(edge_pg_entry->source_pk[0], edge_pg_entry->source_reference));
+
+	auto cte_col_ref = make_uniq<ColumnRefExpression>("temp", "__x");
+
+	vector<unique_ptr<ParsedExpression>> function_children;
+	function_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(0)));
+	function_children.push_back(make_uniq<ColumnRefExpression>("rowid", edge_pg_entry->source_reference));
+	function_children.push_back(make_uniq<ConstantExpression>(extra_arg));
+	auto function = make_uniq<FunctionExpression>(function_name, std::move(function_children));
+
+	std::vector<unique_ptr<ParsedExpression>> addition_children;
+	addition_children.emplace_back(std::move(cte_col_ref));
+	addition_children.emplace_back(std::move(function));
+	auto addition_function = make_uniq<FunctionExpression>("add", std::move(addition_children));
+	addition_function->alias = function_alias;
+	select_expression.emplace_back(std::move(addition_function));
+	select_node->select_list = std::move(select_expression);
+
+	auto src_base_ref = edge_pg_entry->source_pg_table->CreateBaseTableRef();
+	auto temp_cte_select_subquery = CreateCountCTESubquery();
+
+	auto cross_join_ref = make_uniq<JoinRef>(JoinRefType::CROSS);
+	cross_join_ref->left = std::move(src_base_ref);
+	cross_join_ref->right = std::move(temp_cte_select_subquery);
+	select_node->from_table = std::move(cross_join_ref);
+
+	return select_node;
+}
+
+unique_ptr<SelectNode> CreatePairwiseSelectNode(const shared_ptr<PropertyGraphTable> &edge_pg_entry,
+                                                const string &function_name, const string &function_alias) {
+	auto select_node = make_uniq<SelectNode>();
+	const string &pk = edge_pg_entry->source_pk[0];
+
+	std::vector<unique_ptr<ParsedExpression>> select_expression;
+	auto a_pk = make_uniq<ColumnRefExpression>(pk, "a");
+	a_pk->alias = "node1";
+	auto b_pk = make_uniq<ColumnRefExpression>(pk, "b");
+	b_pk->alias = "node2";
+	select_expression.emplace_back(std::move(a_pk));
+	select_expression.emplace_back(std::move(b_pk));
+
+	vector<unique_ptr<ParsedExpression>> function_children;
+	function_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(0)));
+	function_children.push_back(make_uniq<ColumnRefExpression>("rowid", "a"));
+	function_children.push_back(make_uniq<ColumnRefExpression>("rowid", "b"));
+	auto function = make_uniq<FunctionExpression>(function_name, std::move(function_children));
+
+	std::vector<unique_ptr<ParsedExpression>> addition_children;
+	addition_children.emplace_back(make_uniq<ColumnRefExpression>("temp", "__x"));
+	addition_children.emplace_back(std::move(function));
+	auto addition_function = make_uniq<FunctionExpression>("add", std::move(addition_children));
+	addition_function->alias = function_alias;
+	select_expression.emplace_back(std::move(addition_function));
+	select_node->select_list = std::move(select_expression);
+
+	auto a_ref = edge_pg_entry->source_pg_table->CreateBaseTableRef();
+	a_ref->alias = "a";
+	auto b_ref = edge_pg_entry->source_pg_table->CreateBaseTableRef();
+	b_ref->alias = "b";
+
+	auto inner_join = make_uniq<JoinRef>(JoinRefType::CROSS);
+	inner_join->left = std::move(a_ref);
+	inner_join->right = std::move(b_ref);
+
+	auto outer_join = make_uniq<JoinRef>(JoinRefType::CROSS);
+	outer_join->left = std::move(inner_join);
+	outer_join->right = CreateCountCTESubquery();
+	select_node->from_table = std::move(outer_join);
+
+	// Only emit each unordered pair once.
+	select_node->where_clause =
+	    make_uniq<ComparisonExpression>(ExpressionType::COMPARE_LESSTHAN, make_uniq<ColumnRefExpression>("rowid", "a"),
+	                                    make_uniq<ColumnRefExpression>("rowid", "b"));
 
 	return select_node;
 }

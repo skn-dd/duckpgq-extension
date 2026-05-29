@@ -25,6 +25,13 @@ struct CoreTableFunctions {
 		RegisterHitsHubTableFunction(loader);
 		RegisterGlobalClusteringCoefficientTableFunction(loader);
 		RegisterTopologicalSortTableFunction(loader);
+		RegisterJaccardSimilarityTableFunction(loader);
+		RegisterCosineSimilarityTableFunction(loader);
+		RegisterOverlapSimilarityTableFunction(loader);
+		RegisterCommonNeighborsTableFunction(loader);
+		RegisterPreferentialAttachmentTableFunction(loader);
+		RegisterAdamicAdarTableFunction(loader);
+		RegisterResourceAllocationTableFunction(loader);
 		RegisterLocalClusteringCoefficientTableFunction(loader);
 		RegisterScanTableFunctions(loader);
 		RegisterSummarizePropertyGraphTableFunction(loader);
@@ -53,6 +60,13 @@ private:
 	static void RegisterHitsHubTableFunction(ExtensionLoader &loader);
 	static void RegisterGlobalClusteringCoefficientTableFunction(ExtensionLoader &loader);
 	static void RegisterTopologicalSortTableFunction(ExtensionLoader &loader);
+	static void RegisterJaccardSimilarityTableFunction(ExtensionLoader &loader);
+	static void RegisterCosineSimilarityTableFunction(ExtensionLoader &loader);
+	static void RegisterOverlapSimilarityTableFunction(ExtensionLoader &loader);
+	static void RegisterCommonNeighborsTableFunction(ExtensionLoader &loader);
+	static void RegisterPreferentialAttachmentTableFunction(ExtensionLoader &loader);
+	static void RegisterAdamicAdarTableFunction(ExtensionLoader &loader);
+	static void RegisterResourceAllocationTableFunction(ExtensionLoader &loader);
 	static void RegisterLocalClusteringCoefficientTableFunction(ExtensionLoader &loader);
 	static void RegisterScanTableFunctions(ExtensionLoader &loader);
 	static void RegisterWeaklyConnectedComponentTableFunction(ExtensionLoader &loader);

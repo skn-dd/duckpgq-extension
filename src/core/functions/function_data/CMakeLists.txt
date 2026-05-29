@@ -10,6 +10,13 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/hits_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/global_clustering_coefficient_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/topological_sort_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/jaccard_similarity_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/resource_allocation_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/adamic_adar_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/preferential_attachment_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/common_neighbors_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/overlap_similarity_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cosine_similarity_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality_function_data.cpp

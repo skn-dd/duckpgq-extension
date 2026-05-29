@@ -23,6 +23,13 @@ struct CoreScalarFunctions {
 		RegisterHitsHubScalarFunction(loader);
 		RegisterGlobalClusteringCoefficientScalarFunction(loader);
 		RegisterTopologicalSortScalarFunction(loader);
+		RegisterJaccardSimilarityScalarFunction(loader);
+		RegisterCosineSimilarityScalarFunction(loader);
+		RegisterOverlapSimilarityScalarFunction(loader);
+		RegisterCommonNeighborsScalarFunction(loader);
+		RegisterPreferentialAttachmentScalarFunction(loader);
+		RegisterAdamicAdarScalarFunction(loader);
+		RegisterResourceAllocationScalarFunction(loader);
 		RegisterCSRDeletionScalarFunction(loader);
 		RegisterGetCSRWTypeScalarFunction(loader);
 		RegisterIterativeLengthScalarFunction(loader);
@@ -54,6 +61,13 @@ private:
 	static void RegisterHitsHubScalarFunction(ExtensionLoader &loader);
 	static void RegisterGlobalClusteringCoefficientScalarFunction(ExtensionLoader &loader);
 	static void RegisterTopologicalSortScalarFunction(ExtensionLoader &loader);
+	static void RegisterJaccardSimilarityScalarFunction(ExtensionLoader &loader);
+	static void RegisterCosineSimilarityScalarFunction(ExtensionLoader &loader);
+	static void RegisterOverlapSimilarityScalarFunction(ExtensionLoader &loader);
+	static void RegisterCommonNeighborsScalarFunction(ExtensionLoader &loader);
+	static void RegisterPreferentialAttachmentScalarFunction(ExtensionLoader &loader);
+	static void RegisterAdamicAdarScalarFunction(ExtensionLoader &loader);
+	static void RegisterResourceAllocationScalarFunction(ExtensionLoader &loader);
 	static void RegisterCSRDeletionScalarFunction(ExtensionLoader &loader);
 	static void RegisterGetCSRWTypeScalarFunction(ExtensionLoader &loader);
 	static void RegisterIterativeLengthScalarFunction(ExtensionLoader &loader);
