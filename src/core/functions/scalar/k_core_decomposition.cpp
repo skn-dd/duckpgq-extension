@@ -32,51 +32,73 @@ static void KCoreDecompositionFunction(DataChunk &args, ExpressionState &state, 
 		std::lock_guard<std::mutex> guard(info.state_lock); // Thread safety
 		if (!info.state_initialized) {
 			// vsize = num_vertices + 2 (padding); real vertices are those with u + 2 < v_size.
+			// Batagelj-Zaversnik O(V+E) core decomposition over the real vertices
+			// (vsize = num_vertices + 2 padding slots).
+			const size_t n = (v_size >= 2) ? v_size - 2 : 0;
 			info.core.assign(v_size, 0);
-
-			// Residual degree per vertex (current degree in the remaining subgraph).
-			vector<int64_t> degree(v_size, 0);
-			vector<bool> removed(v_size, false);
-			for (size_t u = 0; u + 2 < v_size; u++) {
-				int64_t start_edge = v[u];
-				int64_t end_edge = (u + 1 < v_size) ? v[u + 1] : static_cast<int64_t>(e.size());
-				degree[u] = end_edge - start_edge;
-			}
-
-			// Repeatedly remove the minimum residual-degree vertex.
-			int64_t seen_so_far = 0;
-			for (size_t iter = 0; iter + 2 < v_size; iter++) {
-				// Find the remaining vertex with the smallest residual degree.
-				int64_t min_vertex = -1;
-				int64_t min_degree = 0;
-				for (size_t u = 0; u + 2 < v_size; u++) {
-					if (removed[u]) {
-						continue;
-					}
-					if (min_vertex == -1 || degree[u] < min_degree) {
-						min_vertex = static_cast<int64_t>(u);
-						min_degree = degree[u];
+			if (n > 0) {
+				vector<int64_t> deg(n, 0);
+				int64_t max_deg = 0;
+				for (size_t u = 0; u < n; u++) {
+					int64_t start_edge = v[u];
+					int64_t end_edge = (u + 1 < v_size) ? v[u + 1] : static_cast<int64_t>(e.size());
+					deg[u] = end_edge - start_edge;
+					if (deg[u] > max_deg) {
+						max_deg = deg[u];
 					}
 				}
-				if (min_vertex == -1) {
-					break;
-				}
 
-				// Core number is the running maximum of removed residual degrees.
-				if (degree[min_vertex] > seen_so_far) {
-					seen_so_far = degree[min_vertex];
+				// Bucket-sort vertices by current degree into `vert`, tracking each
+				// vertex's position (`pos`) and the start index of each degree bin (`bin`).
+				vector<int64_t> bin(static_cast<size_t>(max_deg) + 2, 0);
+				for (size_t u = 0; u < n; u++) {
+					bin[deg[u]]++;
 				}
-				info.core[min_vertex] = seen_so_far;
-				removed[min_vertex] = true;
+				int64_t start = 0;
+				for (int64_t d = 0; d <= max_deg; d++) {
+					int64_t cnt = bin[d];
+					bin[d] = start;
+					start += cnt;
+				}
+				vector<int64_t> vert(n, 0);
+				vector<int64_t> pos(n, 0);
+				for (size_t u = 0; u < n; u++) {
+					pos[u] = bin[deg[u]];
+					vert[pos[u]] = static_cast<int64_t>(u);
+					bin[deg[u]]++;
+				}
+				for (int64_t d = max_deg; d >= 1; d--) {
+					bin[d] = bin[d - 1];
+				}
+				bin[0] = 0;
 
-				// Remove it: decrement residual degree of its remaining neighbors.
-				int64_t start_edge = v[min_vertex];
-				int64_t end_edge =
-				    (static_cast<size_t>(min_vertex) + 1 < v_size) ? v[min_vertex + 1] : static_cast<int64_t>(e.size());
-				for (int64_t j = start_edge; j < end_edge; j++) {
-					int64_t neighbor = e[j];
-					if (!removed[neighbor] && degree[neighbor] > 0) {
-						degree[neighbor]--;
+				// Process vertices in non-decreasing degree order; a vertex's core
+				// number is its residual degree when it is processed.
+				for (size_t i = 0; i < n; i++) {
+					int64_t node = vert[i];
+					info.core[node] = deg[node];
+					int64_t start_edge = v[node];
+					int64_t end_edge =
+					    (static_cast<size_t>(node) + 1 < v_size) ? v[node + 1] : static_cast<int64_t>(e.size());
+					for (int64_t j = start_edge; j < end_edge; j++) {
+						int64_t u = e[j];
+						if (u < 0 || static_cast<size_t>(u) >= n) {
+							continue;
+						}
+						if (deg[u] > deg[node]) {
+							int64_t du = deg[u];
+							int64_t pu = pos[u];
+							int64_t pw = bin[du];
+							int64_t w = vert[pw];
+							if (u != w) {
+								pos[u] = pw;
+								vert[pu] = w;
+								pos[w] = pu;
+								vert[pw] = u;
+							}
+							bin[du]++;
+							deg[u]--;
+						}
 					}
 				}
 			}

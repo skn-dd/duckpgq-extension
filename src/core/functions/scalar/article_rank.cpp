@@ -29,24 +29,24 @@ static void ArticleRankFunction(DataChunk &args, ExpressionState &state, Vector 
 
 	CheckAlgorithmMemoryBudget(info.context, (idx_t)v_size * sizeof(double) * 2, "article_rank");
 
-	// State initialization (only once)
-	if (!info.state_initialized) {
-		info.rank.resize(v_size, 1.0 / static_cast<double>(v_size)); // Initial rank for each node
-		info.temp_rank.resize(v_size,
-		                      0.0);        // Temporary storage for ranks during iteration
-		info.damping_factor = 0.85;        // Typical damping factor
-		info.convergence_threshold = 1e-6; // Convergence threshold
-		info.state_initialized = true;
-		info.converged = false;
-		info.iteration_count = 0;
-	}
-
 	// Average out-degree across all vertices: number of edges / number of vertices.
 	double avg_degree = static_cast<double>(e.size()) / static_cast<double>(v_size);
 
-	// Check if already converged
+	// Compute once and cache. Initialization AND iteration run under the lock so
+	// concurrent scan threads sharing this bind data cannot race on the unlocked
+	// resize (a data race there corrupts the heap and segfaults at scale).
 	if (!info.converged) {
 		std::lock_guard<std::mutex> guard(info.state_lock); // Thread safety
+
+		if (!info.state_initialized) {
+			info.rank.resize(v_size, 1.0 / static_cast<double>(v_size)); // Initial rank for each node
+			info.temp_rank.resize(v_size, 0.0); // Temporary storage for ranks during iteration
+			info.damping_factor = 0.85;         // Typical damping factor
+			info.convergence_threshold = 1e-6;  // Convergence threshold
+			info.state_initialized = true;
+			info.converged = false;
+			info.iteration_count = 0;
+		}
 
 		bool continue_iteration = true;
 		while (continue_iteration) {

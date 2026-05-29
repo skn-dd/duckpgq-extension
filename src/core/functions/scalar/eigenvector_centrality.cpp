@@ -30,27 +30,32 @@ static void EigenvectorCentralityFunction(DataChunk &args, ExpressionState &stat
 	size_t v_size = duckpgq_state->csr_list[info.csr_id]->vsize;
 	CheckAlgorithmMemoryBudget(info.context, (idx_t)v_size * sizeof(double) * 3, "eigenvector_centrality");
 
-	// State initialization (only once)
-	if (!info.state_initialized) {
-		info.centrality.resize(v_size, 1.0 / static_cast<double>(v_size)); // Initial value for each node
-		info.max_iterations = 100;
-		info.convergence_threshold = 1e-8;
-		info.state_initialized = true;
-		info.converged = false;
-		info.iteration_count = 0;
-	}
-
-	// Compute once and cache under the lock
+	// Compute once and cache. Initialization AND computation must run under the
+	// lock: DuckDB parallelizes the scan and shares this bind data across threads,
+	// so an unlocked resize() of the state vector races and corrupts the heap
+	// (manifests as a segfault only once the graph is large enough to parallelize).
 	if (!info.converged) {
 		std::lock_guard<std::mutex> guard(info.state_lock); // Thread safety
+
+		if (!info.state_initialized) {
+			info.centrality.resize(v_size, 1.0 / static_cast<double>(v_size)); // Initial value for each node
+			info.max_iterations = 100;
+			info.convergence_threshold = 1e-8;
+			info.state_initialized = true;
+			info.converged = false;
+			info.iteration_count = 0;
+		}
 
 		if (!info.converged) {
 			vector<double_t> next(v_size, 0.0);
 			while (info.iteration_count < info.max_iterations && !info.converged) {
 				fill(next.begin(), next.end(), 0.0);
 
-				// y[u] = sum over neighbors n of u of x[n]
-				for (size_t i = 0; i < v_size; i++) {
+				// y[u] = sum over neighbors n of u of x[n].
+				// Restrict to real vertices: vsize = num_vertices + 2 padding slots whose
+				// edge offsets are unspecified in the undirected CSR, so reading their
+				// neighbor ranges would index e[] out of bounds.
+				for (size_t i = 0; i + 2 < v_size; i++) {
 					auto start_edge = v[i];
 					auto end_edge = (i + 1 < v_size) ? v[i + 1] : static_cast<int64_t>(e.size());
 					double_t sum = 0.0;

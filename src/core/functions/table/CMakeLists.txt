@@ -15,6 +15,7 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/katz_centrality.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hits.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/global_clustering_coefficient.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/topological_sort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/drop_property_graph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/local_clustering_coefficient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/match.cpp

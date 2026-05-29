@@ -18,6 +18,7 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/katz_centrality.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hits.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/global_clustering_coefficient.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/topological_sort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength_bidirectional.cpp

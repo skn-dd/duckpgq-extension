@@ -24,6 +24,7 @@ struct CoreTableFunctions {
 		RegisterHitsAuthorityTableFunction(loader);
 		RegisterHitsHubTableFunction(loader);
 		RegisterGlobalClusteringCoefficientTableFunction(loader);
+		RegisterTopologicalSortTableFunction(loader);
 		RegisterLocalClusteringCoefficientTableFunction(loader);
 		RegisterScanTableFunctions(loader);
 		RegisterSummarizePropertyGraphTableFunction(loader);
@@ -51,6 +52,7 @@ private:
 	static void RegisterHitsAuthorityTableFunction(ExtensionLoader &loader);
 	static void RegisterHitsHubTableFunction(ExtensionLoader &loader);
 	static void RegisterGlobalClusteringCoefficientTableFunction(ExtensionLoader &loader);
+	static void RegisterTopologicalSortTableFunction(ExtensionLoader &loader);
 	static void RegisterLocalClusteringCoefficientTableFunction(ExtensionLoader &loader);
 	static void RegisterScanTableFunctions(ExtensionLoader &loader);
 	static void RegisterWeaklyConnectedComponentTableFunction(ExtensionLoader &loader);

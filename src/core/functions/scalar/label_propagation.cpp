@@ -40,10 +40,11 @@ static void LabelPropagationFunction(DataChunk &args, ExpressionState &state, Ve
 			}
 
 			vector<int64_t> newlabel(v_size, 0);
-			const int64_t max_iterations = 100;
+			const int64_t max_iterations = 20; // heuristic: cap iterations (cf. Neo4j GDS default ~10) to bound runtime on large/near-regular graphs
 			for (int64_t iter = 0; iter < max_iterations; iter++) {
 				bool changed = false;
-				for (size_t u = 0; u < v_size; u++) {
+					std::unordered_map<int64_t, int64_t> counts; // reused across vertices to avoid reallocation
+				for (size_t u = 0; u + 2 < v_size; u++) {
 					auto start_edge = v[u];
 					auto end_edge = (u + 1 < v_size) ? v[u + 1] : static_cast<int64_t>(e.size());
 					if (end_edge <= start_edge) {
@@ -54,7 +55,7 @@ static void LabelPropagationFunction(DataChunk &args, ExpressionState &state, Ve
 
 					// Count label frequencies among neighbors using the
 					// previous iteration's labels (synchronous update).
-					std::unordered_map<int64_t, int64_t> counts;
+					counts.clear();
 					for (int64_t j = start_edge; j < end_edge; j++) {
 						int64_t neighbor = e[j];
 						counts[info.label[neighbor]]++;

@@ -9,6 +9,7 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/katz_centrality_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hits_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/global_clustering_coefficient_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/topological_sort_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality_function_data.cpp

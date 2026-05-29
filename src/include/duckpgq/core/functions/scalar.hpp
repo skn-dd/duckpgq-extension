@@ -22,6 +22,7 @@ struct CoreScalarFunctions {
 		RegisterHitsAuthorityScalarFunction(loader);
 		RegisterHitsHubScalarFunction(loader);
 		RegisterGlobalClusteringCoefficientScalarFunction(loader);
+		RegisterTopologicalSortScalarFunction(loader);
 		RegisterCSRDeletionScalarFunction(loader);
 		RegisterGetCSRWTypeScalarFunction(loader);
 		RegisterIterativeLengthScalarFunction(loader);
@@ -52,6 +53,7 @@ private:
 	static void RegisterHitsAuthorityScalarFunction(ExtensionLoader &loader);
 	static void RegisterHitsHubScalarFunction(ExtensionLoader &loader);
 	static void RegisterGlobalClusteringCoefficientScalarFunction(ExtensionLoader &loader);
+	static void RegisterTopologicalSortScalarFunction(ExtensionLoader &loader);
 	static void RegisterCSRDeletionScalarFunction(ExtensionLoader &loader);
 	static void RegisterGetCSRWTypeScalarFunction(ExtensionLoader &loader);
 	static void RegisterIterativeLengthScalarFunction(ExtensionLoader &loader);
