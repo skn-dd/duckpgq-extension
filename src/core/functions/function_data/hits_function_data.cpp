@@ -1,4 +1,5 @@
 #include "duckpgq/core/functions/function_data/hits_function_data.hpp"
+#include "duckdb/execution/expression_executor.hpp"
 
 #include <duckpgq/core/utils/duckpgq_utils.hpp>
 

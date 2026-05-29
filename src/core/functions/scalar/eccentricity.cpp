@@ -74,7 +74,7 @@ static void EccentricityFunction(DataChunk &args, ExpressionState &state, Vector
 	auto &src = args.data[1];
 	UnifiedVectorFormat vdata_src;
 	src.ToUnifiedFormat(args.size(), vdata_src);
-	auto src_data = reinterpret_cast<int64_t *>(vdata_src.data);
+	auto src_data = reinterpret_cast<const int64_t *>(vdata_src.data);
 
 	// Create result vector
 	ValidityMask &result_validity = FlatVector::Validity(result);
