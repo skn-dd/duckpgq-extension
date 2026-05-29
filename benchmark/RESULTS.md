@@ -97,4 +97,43 @@ slowest at 5M (52s); per-vertex algorithms that run inside DuckDB's parallel sca
 are faster.
 
 ## Regression status
-All pre-existing sqllogictests plus the 16 new algorithm tests pass; no regressions.
+All pre-existing sqllogictests plus the 28 new algorithm tests pass; no regressions.
+
+## Cross-system comparison vs Oracle AI Database 26ai (23ai ADB)
+
+Live comparison against an Oracle Autonomous Database (`23.26.2.2.0`, "high"
+service). Identical ring-lattice graphs (N vertices, ~5N directed edges) were
+generated on both systems. `benchmark/oracle_compare.py` (credentials via env
+vars) drives the Oracle side using its `GRAPH_TABLE` graph engine on a SQL
+property graph.
+
+**Degree centrality** — wall-clock seconds:
+
+| Scale | DuckPGQ (total: gen+CSR+compute) | Oracle build+PG | Oracle degree (GRAPH_TABLE) | Oracle end-to-end |
+|---|---|---|---|---|
+| 100k / 0.5M edges | 0.23 | 1.65 | 0.25 | ~1.9 |
+| 500k / 2.5M edges | 0.89 | 3.75 | 0.83 | ~4.6 |
+| 1M / 5M edges | 1.71 | 6.70 | 1.62 | ~8.3 |
+| 5M / 25M edges | 5.44 | 31.12 | 10.73 | ~41.8 |
+
+Oracle 2-hop pattern count (`(a)->(b)->(c)`, its graph engine): 0.51 / 2.92 /
+4.76 / 31.30 s at 100k/500k/1M/5M.
+
+**Read this comparison with caveats** — it is indicative, not controlled:
+- Different architectures/goals: DuckPGQ is in-process, in-memory, ephemeral CSR
+  on a 32-core box; Oracle ADB is a durable, transactional, shared autonomous
+  instance (unknown OCPU allocation) accessed over the network.
+- Semantics differ slightly: DuckPGQ degree is undirected; the Oracle query is
+  directed out-degree. DuckPGQ's number includes graph generation + CSR build;
+  Oracle's build and query are timed separately.
+- Takeaway: the engines are comparable up to ~1M; DuckPGQ's in-memory CSR pulls
+  ahead end-to-end at 5M (≈5s vs ≈42s incl. Oracle's durable build).
+
+**Algorithm-library head-to-head (PageRank / WCC / Bellman-Ford):** Oracle 23ai
+*does* provide these in-database via `DBMS_OGA` (invoked through the Graph
+Analytics Framework `GRAPH_TABLE` syntax). Finalizing the exact GAF
+output-property grammar (`ORA_VERTEX_OUTPUT_PROPERTY`) over a blind SQL
+connection was not completed this session (ORA-40975); completing it is the
+next step to add a direct PageRank/WCC time comparison. There is a pre-built
+`BENCH_GRAPH` (10M vertices / 100M edges) on the instance available for that.
+
