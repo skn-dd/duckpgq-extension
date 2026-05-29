@@ -32,6 +32,11 @@ struct CoreTableFunctions {
 		RegisterPreferentialAttachmentTableFunction(loader);
 		RegisterAdamicAdarTableFunction(loader);
 		RegisterResourceAllocationTableFunction(loader);
+		RegisterSingleSourceShortestPathTableFunction(loader);
+		RegisterPersonalizedPagerankTableFunction(loader);
+		RegisterOutDegreeCentralityTableFunction(loader);
+		RegisterInDegreeCentralityTableFunction(loader);
+		RegisterLouvainTableFunction(loader);
 		RegisterLocalClusteringCoefficientTableFunction(loader);
 		RegisterScanTableFunctions(loader);
 		RegisterSummarizePropertyGraphTableFunction(loader);
@@ -67,6 +72,11 @@ private:
 	static void RegisterPreferentialAttachmentTableFunction(ExtensionLoader &loader);
 	static void RegisterAdamicAdarTableFunction(ExtensionLoader &loader);
 	static void RegisterResourceAllocationTableFunction(ExtensionLoader &loader);
+	static void RegisterSingleSourceShortestPathTableFunction(ExtensionLoader &loader);
+	static void RegisterPersonalizedPagerankTableFunction(ExtensionLoader &loader);
+	static void RegisterOutDegreeCentralityTableFunction(ExtensionLoader &loader);
+	static void RegisterInDegreeCentralityTableFunction(ExtensionLoader &loader);
+	static void RegisterLouvainTableFunction(ExtensionLoader &loader);
 	static void RegisterLocalClusteringCoefficientTableFunction(ExtensionLoader &loader);
 	static void RegisterScanTableFunctions(ExtensionLoader &loader);
 	static void RegisterWeaklyConnectedComponentTableFunction(ExtensionLoader &loader);

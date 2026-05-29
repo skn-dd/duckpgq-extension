@@ -17,6 +17,11 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/common_neighbors_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/overlap_similarity_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cosine_similarity_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/single_source_shortest_path_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/personalized_pagerank_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/out_degree_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/in_degree_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/louvain_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality_function_data.cpp

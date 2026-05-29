@@ -1,0 +1,40 @@
+# name: test/sql/scalar/louvain.test
+# description: Testing the louvain (modularity community detection) implementation
+# group: [scalar]
+
+require duckpgq
+
+statement ok
+CREATE TABLE Node(id BIGINT, name VARCHAR);INSERT INTO Node VALUES (0,'a'),(1,'b'),(2,'c'),(3,'d'),(4,'e'),(5,'f');
+
+statement ok
+CREATE TABLE link(src BIGINT, dst BIGINT, w BIGINT);INSERT INTO link VALUES (0,1,1),(1,2,1),(2,0,1),(3,4,1),(4,5,1),(5,3,1),(2,3,1);
+
+statement ok
+-CREATE PROPERTY GRAPH pg
+VERTEX TABLES (
+    Node
+    )
+EDGE TABLES (
+    link    SOURCE KEY ( src ) REFERENCES Node ( id )
+            DESTINATION KEY ( dst ) REFERENCES Node ( id )
+    );
+
+# Two triangles {0,1,2} and {3,4,5} joined by a single bridge edge 2-3.
+# Louvain should detect exactly two communities.
+query I
+select count(distinct community) from louvain(pg, node, link);
+----
+2
+
+# Vertices 0,1,2 must all share one community.
+query I
+select count(distinct community) from louvain(pg, node, link) where id in (0,1,2);
+----
+1
+
+# Vertices 3,4,5 must all share another community.
+query I
+select count(distinct community) from louvain(pg, node, link) where id in (3,4,5);
+----
+1

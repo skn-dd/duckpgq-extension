@@ -23,6 +23,11 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/common_neighbors.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/overlap_similarity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cosine_similarity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/single_source_shortest_path.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/personalized_pagerank.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/out_degree_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/in_degree_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/louvain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/drop_property_graph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/local_clustering_coefficient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/match.cpp

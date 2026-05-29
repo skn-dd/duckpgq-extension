@@ -30,6 +30,11 @@ struct CoreScalarFunctions {
 		RegisterPreferentialAttachmentScalarFunction(loader);
 		RegisterAdamicAdarScalarFunction(loader);
 		RegisterResourceAllocationScalarFunction(loader);
+		RegisterSingleSourceShortestPathScalarFunction(loader);
+		RegisterPersonalizedPagerankScalarFunction(loader);
+		RegisterOutDegreeCentralityScalarFunction(loader);
+		RegisterInDegreeCentralityScalarFunction(loader);
+		RegisterLouvainScalarFunction(loader);
 		RegisterCSRDeletionScalarFunction(loader);
 		RegisterGetCSRWTypeScalarFunction(loader);
 		RegisterIterativeLengthScalarFunction(loader);
@@ -68,6 +73,11 @@ private:
 	static void RegisterPreferentialAttachmentScalarFunction(ExtensionLoader &loader);
 	static void RegisterAdamicAdarScalarFunction(ExtensionLoader &loader);
 	static void RegisterResourceAllocationScalarFunction(ExtensionLoader &loader);
+	static void RegisterSingleSourceShortestPathScalarFunction(ExtensionLoader &loader);
+	static void RegisterPersonalizedPagerankScalarFunction(ExtensionLoader &loader);
+	static void RegisterOutDegreeCentralityScalarFunction(ExtensionLoader &loader);
+	static void RegisterInDegreeCentralityScalarFunction(ExtensionLoader &loader);
+	static void RegisterLouvainScalarFunction(ExtensionLoader &loader);
 	static void RegisterCSRDeletionScalarFunction(ExtensionLoader &loader);
 	static void RegisterGetCSRWTypeScalarFunction(ExtensionLoader &loader);
 	static void RegisterIterativeLengthScalarFunction(ExtensionLoader &loader);
