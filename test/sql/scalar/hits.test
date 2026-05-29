@@ -24,7 +24,7 @@ EDGE TABLES (
 # vertex 2 from 0,1; vertex 1 from 0; vertex 0 only from 3 (whose hub -> 0);
 # vertex 4 has no in-edges (authority ~0).
 query I
-select id from hits_authority(pg, student, know) order by hits_authority desc, id;
+select id from hits_authority(pg, student, know) order by round(hits_authority, 9) desc, id;
 ----
 3
 2
@@ -35,7 +35,7 @@ select id from hits_authority(pg, student, know) order by hits_authority desc, i
 # Hub ranking: vertex 0 points to 1,2,3 (top hub); vertex 1 -> 2,3;
 # vertex 2 -> 3; vertex 4 -> 3; vertex 3 -> 0 (whose authority -> 0, hub ~0).
 query I
-select id from hits_hub(pg, student, know) order by hits_hub desc, id;
+select id from hits_hub(pg, student, know) order by round(hits_hub, 9) desc, id;
 ----
 0
 1

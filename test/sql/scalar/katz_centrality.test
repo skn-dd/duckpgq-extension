@@ -23,7 +23,7 @@ EDGE TABLES (
 # Undirected adjacency: 0={1,2,3}, 1={0,2,3}, 2={0,1,3}, 3={0,1,2,4}, 4={3}
 # Vertex 3 connects to all -> highest; 0,1,2 are symmetric (equal); 4 -> lowest.
 query I
-select id from katz_centrality(pg, student, know) order by katz_centrality desc, id;
+select id from katz_centrality(pg, student, know) order by round(katz_centrality, 9) desc, id;
 ----
 3
 0

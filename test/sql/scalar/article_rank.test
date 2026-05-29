@@ -24,7 +24,7 @@ EDGE TABLES (
 # Vertex 0 receives rank back from the strong contributor 3 (out-degree 1).
 # Vertex 4 has no in-edges (only the teleport term) so ranks lowest.
 query I
-select id from article_rank(pg, student, know) order by article_rank desc, id;
+select id from article_rank(pg, student, know) order by round(article_rank, 9) desc, id;
 ----
 3
 0

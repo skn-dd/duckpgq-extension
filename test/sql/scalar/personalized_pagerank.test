@@ -30,7 +30,7 @@ select count(*) from personalized_pagerank(pg, student, know, 0);
 # vertex 4 (no in-edges, unreachable from 0) has the lowest (near-zero).
 # Full deterministic ordering for this directed graph: 0, 3, 2, 1, 4.
 query I
-select id from personalized_pagerank(pg, student, know, 0) order by personalized_pagerank desc, id;
+select id from personalized_pagerank(pg, student, know, 0) order by round(personalized_pagerank, 9) desc, id;
 ----
 0
 3
@@ -40,6 +40,6 @@ select id from personalized_pagerank(pg, student, know, 0) order by personalized
 
 # The source vertex (0) must rank first.
 query I
-select id from personalized_pagerank(pg, student, know, 0) order by personalized_pagerank desc, id limit 1;
+select id from personalized_pagerank(pg, student, know, 0) order by round(personalized_pagerank, 9) desc, id limit 1;
 ----
 0
