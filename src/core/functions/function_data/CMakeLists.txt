@@ -1,6 +1,33 @@
 set(EXTENSION_SOURCES
     ${EXTENSION_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/cheapest_path_length_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/degree_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/harmonic_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/k_core_decomposition_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eccentricity_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/article_rank_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/katz_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hits_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/global_clustering_coefficient_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/topological_sort_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/jaccard_similarity_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/resource_allocation_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/adamic_adar_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/preferential_attachment_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/common_neighbors_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/overlap_similarity_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cosine_similarity_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/single_source_shortest_path_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/personalized_pagerank_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/out_degree_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/in_degree_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/louvain_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/strongly_connected_component_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/label_propagation_function_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eigenvector_centrality_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterative_length_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/local_clustering_coefficient_function_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pagerank_function_data.cpp

@@ -1,0 +1,38 @@
+# name: test/sql/scalar/resource_allocation.test
+# description: Testing the pairwise resource allocation index implementation
+# group: [scalar]
+
+require duckpgq
+
+statement ok
+CREATE TABLE Student(id BIGINT, name VARCHAR);INSERT INTO Student VALUES (0, 'a'), (1, 'b'), (2, 'c'), (3, 'd'), (4, 'e');
+
+statement ok
+CREATE TABLE know(src BIGINT, dst BIGINT, createDate BIGINT);INSERT INTO know VALUES (0,1, 10), (0,2, 11), (0,3, 12), (3,0, 13), (1,2, 14), (1,3, 15), (2,3, 16), (4,3, 17);
+
+statement ok
+-CREATE PROPERTY GRAPH pg
+VERTEX TABLES (
+    Student
+    )
+EDGE TABLES (
+    know    SOURCE KEY ( src ) REFERENCES Student ( id )
+            DESTINATION KEY ( dst ) REFERENCES Student ( id )
+    );
+
+# Undirected adjacency: 0:{1,2,3} 1:{0,2,3} 2:{0,1,3} 3:{0,1,2,4} 4:{3}
+# degrees: 0:3 1:3 2:3 3:4 4:1
+# resource_allocation(a,b) = sum over w in N(a) intersect N(b) of 1/deg(w), emitted for a<b.
+query IIR
+select node1, node2, round(resource_allocation,4) from resource_allocation(pg, student, know) order by node1, node2;
+----
+0	1	0.5833
+0	2	0.5833
+0	3	0.6667
+0	4	0.25
+1	2	0.5833
+1	3	0.6667
+1	4	0.25
+2	3	0.6667
+2	4	0.25
+3	4	0.0

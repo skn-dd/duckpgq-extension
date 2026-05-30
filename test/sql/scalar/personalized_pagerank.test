@@ -1,0 +1,45 @@
+# name: test/sql/scalar/personalized_pagerank.test
+# description: Testing the personalized pagerank implementation
+# group: [scalar]
+
+require duckpgq
+
+statement ok
+CREATE TABLE Student(id BIGINT, name VARCHAR);INSERT INTO Student VALUES (0, 'Daniel'), (1, 'Tavneet'), (2, 'Gabor'), (3, 'Peter'), (4, 'David');
+
+statement ok
+CREATE TABLE know(src BIGINT, dst BIGINT, createDate BIGINT);INSERT INTO know VALUES (0,1, 10), (0,2, 11), (0,3, 12), (3,0, 13), (1,2, 14), (1,3, 15), (2,3, 16), (4,3, 17);
+
+statement ok
+-CREATE PROPERTY GRAPH pg
+VERTEX TABLES (
+    Student
+    )
+EDGE TABLES (
+    know    SOURCE KEY ( src ) REFERENCES Student ( id )
+            DESTINATION KEY ( dst ) REFERENCES Student ( id )
+    );
+
+# All 5 vertices are scored.
+query I
+select count(*) from personalized_pagerank(pg, student, know, 0);
+----
+5
+
+# With teleport biased to source 0, vertex 0 has the highest PPR score and
+# vertex 4 (no in-edges, unreachable from 0) has the lowest (near-zero).
+# Full deterministic ordering for this directed graph: 0, 3, 2, 1, 4.
+query I
+select id from personalized_pagerank(pg, student, know, 0) order by round(personalized_pagerank, 9) desc, id;
+----
+0
+3
+2
+1
+4
+
+# The source vertex (0) must rank first.
+query I
+select id from personalized_pagerank(pg, student, know, 0) order by round(personalized_pagerank, 9) desc, id limit 1;
+----
+0

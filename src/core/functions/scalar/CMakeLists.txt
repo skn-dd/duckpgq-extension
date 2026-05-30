@@ -4,6 +4,33 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/csr_creation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/csr_deletion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/csr_get_w_type.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/degree_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/betweenness_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/strongly_connected_component.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/label_propagation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eigenvector_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/harmonic_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/k_core_decomposition.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eccentricity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/article_rank.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/katz_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hits.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/global_clustering_coefficient.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/topological_sort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/jaccard_similarity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/resource_allocation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/adamic_adar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/preferential_attachment.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/common_neighbors.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/overlap_similarity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cosine_similarity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/single_source_shortest_path.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/personalized_pagerank.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/out_degree_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/in_degree_centrality.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/louvain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/iterativelength_bidirectional.cpp
