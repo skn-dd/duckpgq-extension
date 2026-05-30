@@ -315,8 +315,8 @@ void PGQMatchFunction::EdgeTypeAny(const shared_ptr<PropertyGraphTable> &edge_ta
 	auto union_node = make_uniq<SetOperationNode>();
 	union_node->setop_type = SetOperationType::UNION;
 	union_node->setop_all = true;
-	union_node->children.push_back(std::move(src_dst_select_node));
-	union_node->children.push_back(std::move(dst_src_select_node));
+	union_node->left = std::move(src_dst_select_node);
+	union_node->right = std::move(dst_src_select_node);
 	auto union_select = make_uniq<SelectStatement>();
 	union_select->node = std::move(union_node);
 	// (SELECT src, dst, * from edge_table UNION ALL SELECT dst, src, * from
@@ -755,9 +755,7 @@ void PGQMatchFunction::AddBoundedPathExpansion(const shared_ptr<PropertyGraphTab
 		destination_columns.push_back("__duckpgq_dst_" + std::to_string(key_idx));
 	}
 
-	auto union_node = make_uniq<SetOperationNode>();
-	union_node->setop_type = SetOperationType::UNION;
-	union_node->setop_all = true;
+	vector<unique_ptr<QueryNode>> union_branches;
 
 	for (int64_t path_length = subpath->lower; path_length <= subpath->upper; path_length++) {
 		auto branch = make_uniq<SelectNode>();
@@ -810,11 +808,11 @@ void PGQMatchFunction::AddBoundedPathExpansion(const shared_ptr<PropertyGraphTab
 		}
 
 		branch->where_clause = BuildConjunction(branch_conditions);
-		union_node->children.push_back(std::move(branch));
+		union_branches.push_back(std::move(branch));
 	}
 
 	auto union_select = make_uniq<SelectStatement>();
-	union_select->node = std::move(union_node);
+	union_select->node = FoldUnionAll(std::move(union_branches));
 	auto union_inner_alias = path_alias + "_union";
 	auto union_subquery = make_uniq<SubqueryRef>(std::move(union_select));
 	union_subquery->alias = union_inner_alias;

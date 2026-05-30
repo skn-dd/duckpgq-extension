@@ -127,7 +127,7 @@ SummarizePropertyGraphFunction::CreateGroupBySubquery(const shared_ptr<PropertyG
 	GroupByNode grouping_node;
 	grouping_node.group_expressions.push_back(make_uniq<ColumnRefExpression>(degree_column));
 	GroupingSet grouping_set;
-	grouping_set.insert(ProjectionIndex(0));
+	grouping_set.insert(0);
 	grouping_node.grouping_sets.push_back(std::move(grouping_set));
 	select_node->groups = std::move(grouping_node);
 	auto select_statement = make_uniq<SelectStatement>();
@@ -275,8 +275,8 @@ SummarizePropertyGraphFunction::HandleSingleVertexTable(const shared_ptr<Propert
 	return std::move(subquery);
 }
 
-void AddToUnionNode(unique_ptr<SetOperationNode> &final_union_node, unique_ptr<SelectNode> &inner_select_node) {
-	final_union_node->children.push_back(std::move(inner_select_node));
+void AddToUnionNode(vector<unique_ptr<QueryNode>> &union_branches, unique_ptr<SelectNode> &inner_select_node) {
+	union_branches.push_back(std::move(inner_select_node));
 }
 
 unique_ptr<SelectNode> CreateInnerSelectStatNode(const string &stat_table_alias) {
@@ -303,25 +303,23 @@ SummarizePropertyGraphFunction::SummarizePropertyGraphBindReplace(ClientContext 
 		return HandleSingleVertexTable(pg_info->vertex_tables[0], stat_table_alias);
 	}
 
-	auto final_union_node = make_uniq<SetOperationNode>();
-	final_union_node->setop_type = SetOperationType::UNION;
-	final_union_node->setop_all = true;
+	vector<unique_ptr<QueryNode>> union_branches;
 	for (auto &vertex_table : pg_info->vertex_tables) {
 		string stat_table_alias = vertex_table->table_name + "_stats";
 		auto inner_select_node = CreateInnerSelectStatNode(stat_table_alias);
 		inner_select_node->cte_map.map.insert(stat_table_alias, CreateVertexTableCTE(vertex_table));
-		AddToUnionNode(final_union_node, inner_select_node);
+		AddToUnionNode(union_branches, inner_select_node);
 	}
 	for (auto &edge_table : pg_info->edge_tables) {
 		string stat_table_alias = edge_table->source_reference + "_" + edge_table->table_name + "_" +
 		                          edge_table->destination_reference + "_stats";
 		auto inner_select_node = CreateInnerSelectStatNode(stat_table_alias);
 		inner_select_node->cte_map.map.insert(stat_table_alias, CreateEdgeTableCTE(edge_table));
-		AddToUnionNode(final_union_node, inner_select_node);
+		AddToUnionNode(union_branches, inner_select_node);
 	}
 
 	auto select_stmt = make_uniq<SelectStatement>();
-	select_stmt->node = std::move(final_union_node);
+	select_stmt->node = FoldUnionAll(std::move(union_branches));
 	auto subquery = make_uniq<SubqueryRef>(std::move(select_stmt));
 	return std::move(subquery);
 }

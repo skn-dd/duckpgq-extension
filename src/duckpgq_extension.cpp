@@ -3,7 +3,6 @@
 #include "duckpgq_extension.hpp"
 #include "duckpgq/common.hpp"
 #include "duckpgq/core/module.hpp"
-#include <duckpgq_extension_callback.hpp>
 #include "duckdb/main/connection_manager.hpp"
 
 namespace duckdb {
@@ -12,7 +11,8 @@ static void LoadInternal(ExtensionLoader &loader) {
 	CoreModule::Register(loader);
 }
 
-void DuckpgqExtension::Load(ExtensionLoader &loader) {
+void DuckpgqExtension::Load(DuckDB &db) {
+	ExtensionLoader loader(*db.instance);
 	LoadInternal(loader);
 }
 
@@ -24,7 +24,12 @@ std::string DuckpgqExtension::Name() {
 
 extern "C" {
 
-DUCKDB_CPP_EXTENSION_ENTRY(duckpgq, loader) {
-	duckdb::LoadInternal(loader);
+DUCKDB_EXTENSION_API void duckpgq_init(duckdb::DatabaseInstance &db) {
+	duckdb::DuckDB db_wrapper(db);
+	db_wrapper.LoadExtension<duckdb::DuckpgqExtension>();
+}
+
+DUCKDB_EXTENSION_API const char *duckpgq_version() {
+	return duckdb::DuckDB::LibraryVersion();
 }
 }

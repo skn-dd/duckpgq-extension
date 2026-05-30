@@ -31,6 +31,9 @@ unique_ptr<SelectNode> CreateParamSelectNode(const shared_ptr<PropertyGraphTable
 // "a"/"b", a.rowid < b.rowid): emits node1, node2, fn(0, a.rowid, b.rowid).
 unique_ptr<SelectNode> CreatePairwiseSelectNode(const shared_ptr<PropertyGraphTable> &edge_pg_entry,
                                                 const string &function_name, const string &function_alias);
+// Fold a list of query nodes into a left-nested binary UNION ALL chain. DuckDB
+// 1.2.2's SetOperationNode is binary (left/right); later versions are n-ary.
+unique_ptr<QueryNode> FoldUnionAll(vector<unique_ptr<QueryNode>> nodes);
 unique_ptr<BaseTableRef> CreateBaseTableRef(const string &table_name, const string &alias = "");
 unique_ptr<ColumnRefExpression> CreateColumnRefExpression(const string &column_name, const string &table_name = "",
                                                           const string &alias = "");

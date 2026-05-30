@@ -13,7 +13,6 @@
 #include <duckpgq_state.hpp>
 
 #include "duckdb/parser/query_node/cte_node.hpp"
-#include "duckdb/parser/query_node/insert_query_node.hpp"
 #include "duckdb/parser/query_node/set_operation_node.hpp"
 #include "duckdb/parser/tableref/subqueryref.hpp"
 #include <duckpgq/core/functions/table/describe_property_graph.hpp>
@@ -22,7 +21,6 @@
 #include <duckdb/parser/tableref/matchref.hpp>
 #include <duckpgq/core/functions/table/summarize_property_graph.hpp>
 
-#include "duckdb/main/extension_callback_manager.hpp"
 #include "duckpgq/core/utils/duckpgq_utils.hpp"
 
 namespace duckdb {
@@ -91,8 +89,11 @@ void duckpgq_find_query_node(QueryNode *query_node, DuckPGQState &duckpgq_state)
 		return;
 	}
 	if (auto set_operation_node = dynamic_cast<SetOperationNode *>(query_node)) {
-		for (auto &child : set_operation_node->children) {
-			duckpgq_find_query_node(child.get(), duckpgq_state);
+		if (set_operation_node->left) {
+			duckpgq_find_query_node(set_operation_node->left.get(), duckpgq_state);
+		}
+		if (set_operation_node->right) {
+			duckpgq_find_query_node(set_operation_node->right.get(), duckpgq_state);
 		}
 	}
 }
@@ -190,7 +191,7 @@ ParserExtensionPlanResult duckpgq_handle_statement(SQLStatement *statement, Duck
 	}
 	if (statement->type == StatementType::INSERT_STATEMENT) {
 		const auto &insert_statement = statement->Cast<InsertStatement>();
-		return duckpgq_handle_statement(insert_statement.node->select_statement.get(), duckpgq_state);
+		return duckpgq_handle_statement(insert_statement.select_statement.get(), duckpgq_state);
 	}
 
 	throw Exception(ExceptionType::NOT_IMPLEMENTED,
@@ -216,8 +217,7 @@ ParserExtensionPlanResult duckpgq_plan(ParserExtensionInfo *, ClientContext &con
 //------------------------------------------------------------------------------
 void CorePGQParser::RegisterPGQParserExtension(ExtensionLoader &loader) {
 	auto &db = loader.GetDatabaseInstance();
-	auto &manager = ExtensionCallbackManager::Get(db);
-	manager.Register(DuckPGQParserExtension());
+	DBConfig::GetConfig(db).parser_extensions.push_back(DuckPGQParserExtension());
 }
 
 } // namespace duckdb

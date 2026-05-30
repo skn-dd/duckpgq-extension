@@ -32,6 +32,22 @@ shared_ptr<DuckPGQState> GetDuckPGQState(ClientContext &context, bool throw_not_
 	return state;
 }
 
+unique_ptr<QueryNode> FoldUnionAll(vector<unique_ptr<QueryNode>> nodes) {
+	if (nodes.empty()) {
+		return nullptr;
+	}
+	unique_ptr<QueryNode> result = std::move(nodes[0]);
+	for (idx_t i = 1; i < nodes.size(); i++) {
+		auto setop = make_uniq<SetOperationNode>();
+		setop->setop_type = SetOperationType::UNION;
+		setop->setop_all = true;
+		setop->left = std::move(result);
+		setop->right = std::move(nodes[i]);
+		result = std::move(setop);
+	}
+	return result;
+}
+
 void CheckAlgorithmMemoryBudget(ClientContext &context, idx_t estimated_bytes, const string &algorithm_name) {
 	auto &buffer_manager = BufferManager::GetBufferManager(context);
 	idx_t max_memory = buffer_manager.GetMaxMemory();
