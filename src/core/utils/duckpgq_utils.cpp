@@ -3,8 +3,7 @@
 #include "duckdb/parser/statement/copy_statement.hpp"
 #include "duckdb/storage/buffer_manager.hpp"
 
-#include "duckpgq/core/functions/table/describe_property_graph.hpp"
-#include "duckpgq/core/functions/table/drop_property_graph.hpp"
+#include "duckdb/parser/property_graph_table.hpp"
 #include "duckdb/parser/expression/constant_expression.hpp"
 #include "duckdb/parser/tableref/joinref.hpp"
 #include "duckdb/parser/tableref/basetableref.hpp"
@@ -26,9 +25,6 @@ shared_ptr<DuckPGQState> GetDuckPGQState(ClientContext &context, bool throw_not_
 	}
 	shared_ptr<DuckPGQState> state = make_shared_ptr<DuckPGQState>();
 	context.registered_state->Insert("duckpgq", state);
-	state->InitializeInternalTable(context);
-	auto connection = make_shared_ptr<Connection>(*context.db);
-	state->RetrievePropertyGraphs(connection);
 	return state;
 }
 
@@ -48,32 +44,33 @@ void CheckAlgorithmMemoryBudget(ClientContext &context, idx_t estimated_bytes, c
 	}
 }
 
-// Function to get PropertyGraphInfo from DuckPGQState
-CreatePropertyGraphInfo *GetPropertyGraphInfo(const shared_ptr<DuckPGQState> &duckpgq_state, const string &pg_name) {
-	auto property_graph = duckpgq_state->registered_property_graphs.find(pg_name);
-	if (property_graph == duckpgq_state->registered_property_graphs.end()) {
-		throw Exception(ExceptionType::INVALID, "Property graph " + pg_name + " not found");
-	}
-	return dynamic_cast<CreatePropertyGraphInfo *>(property_graph->second.get());
-}
+// Build an edge-spec directly from table-function arguments (no property-graph
+// registration). The CSR builder + CreateSelectNode read these fields exactly as
+// they did for a registered PropertyGraphTable; here we populate them from the
+// caller-supplied (vertex_table, vertex_id, edge_table, src_col, dst_col).
+// Source and destination vertices are the same vertex table; the CSR builders
+// disambiguate the self-join via the "src"/"dst" bindings.
+shared_ptr<PropertyGraphTable> MakeEdgeSpec(const string &vertex_table, const string &vertex_id,
+                                            const string &edge_table, const string &src_col, const string &dst_col) {
+	auto vsrc = make_shared_ptr<PropertyGraphTable>();
+	vsrc->table_name = vertex_table;
+	vsrc->is_vertex_table = true;
+	auto vdst = make_shared_ptr<PropertyGraphTable>();
+	vdst->table_name = vertex_table;
+	vdst->is_vertex_table = true;
 
-// Function to validate the source node and edge table
-shared_ptr<PropertyGraphTable> ValidateSourceNodeAndEdgeTable(CreatePropertyGraphInfo *pg_info,
-                                                              const std::string &node_label,
-                                                              const std::string &edge_label) {
-	auto source_node_pg_entry = pg_info->GetTableByLabel(node_label, true, true);
-	if (!source_node_pg_entry->is_vertex_table) {
-		throw Exception(ExceptionType::INVALID, node_label + " is an edge table, expected a vertex table");
-	}
-	auto edge_pg_entry = pg_info->GetTableByLabel(edge_label, true, false);
-	if (edge_pg_entry->is_vertex_table) {
-		throw Exception(ExceptionType::INVALID, edge_label + " is a vertex table, expected an edge table");
-	}
-	if (!edge_pg_entry->IsSourceTable(source_node_pg_entry->table_name)) {
-		throw Exception(ExceptionType::INVALID,
-		                "Vertex table " + node_label + " is not a source of edge table " + edge_label);
-	}
-	return edge_pg_entry;
+	auto e = make_shared_ptr<PropertyGraphTable>();
+	e->table_name = edge_table;
+	e->table_name_alias = edge_table;
+	e->source_fk = {src_col};
+	e->destination_fk = {dst_col};
+	e->source_pk = {vertex_id};
+	e->destination_pk = {vertex_id};
+	e->source_reference = vertex_table;
+	e->destination_reference = vertex_table;
+	e->source_pg_table = std::move(vsrc);
+	e->destination_pg_table = std::move(vdst);
+	return e;
 }
 
 // Function to create the SELECT node

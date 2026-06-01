@@ -1,6 +1,7 @@
 #pragma once
 #include "duckpgq_state.hpp"
 #include "duckdb/parser/expression/columnref_expression.hpp"
+#include "duckdb/parser/property_graph_table.hpp"
 
 namespace duckdb {
 
@@ -16,10 +17,11 @@ shared_ptr<DuckPGQState> GetDuckPGQState(ClientContext &context, bool throw_erro
 // before allocating their O(V) / O(V^2) state so that large graphs fail
 // gracefully instead of triggering the OOM killer.
 void CheckAlgorithmMemoryBudget(ClientContext &context, idx_t estimated_bytes, const string &algorithm_name);
-CreatePropertyGraphInfo *GetPropertyGraphInfo(const shared_ptr<DuckPGQState> &duckpgq_state, const string &pg_name);
-shared_ptr<PropertyGraphTable> ValidateSourceNodeAndEdgeTable(CreatePropertyGraphInfo *pg_info,
-                                                              const std::string &node_table,
-                                                              const std::string &edge_table);
+// Build an edge-spec from table-function arguments (no property-graph registry):
+// source/destination vertices are the same vertex_table; the CSR builders
+// disambiguate the self-join via "src"/"dst" bindings.
+shared_ptr<PropertyGraphTable> MakeEdgeSpec(const string &vertex_table, const string &vertex_id,
+                                            const string &edge_table, const string &src_col, const string &dst_col);
 unique_ptr<SelectNode> CreateSelectNode(const shared_ptr<PropertyGraphTable> &edge_pg_entry,
                                         const string &function_name, const string &function_alias);
 // Per-vertex SELECT that threads an extra constant scalar argument (e.g. a source
