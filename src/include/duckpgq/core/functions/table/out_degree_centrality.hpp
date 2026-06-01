@@ -17,7 +17,8 @@ class OutDegreeCentralityFunction : public TableFunction {
 public:
 	OutDegreeCentralityFunction() {
 		name = "out_degree_centrality";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = OutDegreeCentralityBindReplace;
 	}
 

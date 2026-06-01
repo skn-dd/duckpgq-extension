@@ -17,7 +17,9 @@ class CosineSimilarityFunction : public TableFunction {
 public:
 	CosineSimilarityFunction() {
 		name = "cosine_similarity";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// cosine_similarity(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = CosineSimilarityBindReplace;
 	}
 

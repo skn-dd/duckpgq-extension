@@ -14,7 +14,9 @@ class StronglyConnectedComponentFunction : public TableFunction {
 public:
 	StronglyConnectedComponentFunction() {
 		name = "strongly_connected_component";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// strongly_connected_component(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = StronglyConnectedComponentBindReplace;
 	}
 

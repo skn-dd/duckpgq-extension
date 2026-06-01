@@ -14,7 +14,9 @@ class SingleSourceShortestPathFunction : public TableFunction {
 public:
 	SingleSourceShortestPathFunction() {
 		name = "single_source_shortest_path";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::BIGINT};
+		// single_source_shortest_path(vertex_table, vertex_id_col, edge_table, src_col, dst_col, source_vertex)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR, LogicalType::BIGINT};
 		bind_replace = SingleSourceShortestPathBindReplace;
 	}
 

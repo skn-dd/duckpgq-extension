@@ -17,7 +17,9 @@ class GlobalClusteringCoefficientFunction : public TableFunction {
 public:
 	GlobalClusteringCoefficientFunction() {
 		name = "global_clustering_coefficient";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// global_clustering_coefficient(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = GlobalClusteringCoefficientBindReplace;
 	}
 

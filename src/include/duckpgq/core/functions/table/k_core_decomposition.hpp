@@ -17,7 +17,9 @@ class KCoreDecompositionFunction : public TableFunction {
 public:
 	KCoreDecompositionFunction() {
 		name = "k_core_decomposition";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// k_core_decomposition(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = KCoreDecompositionBindReplace;
 	}
 

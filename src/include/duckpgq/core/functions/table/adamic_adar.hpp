@@ -17,7 +17,9 @@ class AdamicAdarFunction : public TableFunction {
 public:
 	AdamicAdarFunction() {
 		name = "adamic_adar";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// adamic_adar(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = AdamicAdarBindReplace;
 	}
 

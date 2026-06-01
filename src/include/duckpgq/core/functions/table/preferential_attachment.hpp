@@ -17,7 +17,9 @@ class PreferentialAttachmentFunction : public TableFunction {
 public:
 	PreferentialAttachmentFunction() {
 		name = "preferential_attachment";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// preferential_attachment(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = PreferentialAttachmentBindReplace;
 	}
 

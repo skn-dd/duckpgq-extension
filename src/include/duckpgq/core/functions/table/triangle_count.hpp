@@ -17,7 +17,9 @@ class TriangleCountFunction : public TableFunction {
 public:
 	TriangleCountFunction() {
 		name = "triangle_count";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// triangle_count(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = TriangleCountBindReplace;
 	}
 

@@ -5,11 +5,39 @@ namespace duckdb {
 
 struct CoreTableFunctions {
 	static void Register(ExtensionLoader &loader) {
-		// Vertical slice: only pagerank is decoupled to the MakeEdgeSpec(args)
-		// pattern so far. The other algorithm + path-finding registrations are
-		// re-enabled one-by-one as each bind is decoupled (the parallel fan-out).
-		// Grammar table functions (CREATE/MATCH/DROP/DESCRIBE/scan/summarize) are
-		// excluded entirely — this targets stock DuckDB.
+		// All algorithm + path-finding table functions, decoupled to take
+		// edge/vertex tables directly (MakeEdgeSpec). Grammar table functions
+		// (CREATE/MATCH/DROP/DESCRIBE/scan/summarize) are excluded — stock DuckDB.
+		RegisterDegreeCentralityTableFunction(loader);
+		RegisterTriangleCountTableFunction(loader);
+		RegisterClosenessCentralityTableFunction(loader);
+		RegisterBetweennessCentralityTableFunction(loader);
+		RegisterStronglyConnectedComponentTableFunction(loader);
+		RegisterLabelPropagationTableFunction(loader);
+		RegisterEigenvectorCentralityTableFunction(loader);
+		RegisterHarmonicCentralityTableFunction(loader);
+		RegisterKCoreDecompositionTableFunction(loader);
+		RegisterEccentricityTableFunction(loader);
+		RegisterArticleRankTableFunction(loader);
+		RegisterKatzCentralityTableFunction(loader);
+		RegisterHitsAuthorityTableFunction(loader);
+		RegisterHitsHubTableFunction(loader);
+		RegisterGlobalClusteringCoefficientTableFunction(loader);
+		RegisterTopologicalSortTableFunction(loader);
+		RegisterJaccardSimilarityTableFunction(loader);
+		RegisterCosineSimilarityTableFunction(loader);
+		RegisterOverlapSimilarityTableFunction(loader);
+		RegisterCommonNeighborsTableFunction(loader);
+		RegisterPreferentialAttachmentTableFunction(loader);
+		RegisterAdamicAdarTableFunction(loader);
+		RegisterResourceAllocationTableFunction(loader);
+		RegisterSingleSourceShortestPathTableFunction(loader);
+		RegisterPersonalizedPagerankTableFunction(loader);
+		RegisterOutDegreeCentralityTableFunction(loader);
+		RegisterInDegreeCentralityTableFunction(loader);
+		RegisterLouvainTableFunction(loader);
+		RegisterLocalClusteringCoefficientTableFunction(loader);
+		RegisterWeaklyConnectedComponentTableFunction(loader);
 		RegisterPageRankTableFunction(loader);
 	}
 

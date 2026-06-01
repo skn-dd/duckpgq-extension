@@ -14,7 +14,9 @@ class TopologicalSortFunction : public TableFunction {
 public:
 	TopologicalSortFunction() {
 		name = "topological_sort";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// topological_sort(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = TopologicalSortBindReplace;
 	}
 

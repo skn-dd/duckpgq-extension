@@ -14,7 +14,8 @@ class HitsAuthorityFunction : public TableFunction {
 public:
 	HitsAuthorityFunction() {
 		name = "hits_authority";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = HitsAuthorityBindReplace;
 	}
 
@@ -25,7 +26,8 @@ class HitsHubFunction : public TableFunction {
 public:
 	HitsHubFunction() {
 		name = "hits_hub";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = HitsHubBindReplace;
 	}
 

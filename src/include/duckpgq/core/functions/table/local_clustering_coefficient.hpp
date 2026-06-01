@@ -9,7 +9,9 @@ class LocalClusteringCoefficientFunction : public TableFunction {
 public:
 	LocalClusteringCoefficientFunction() {
 		name = "local_clustering_coefficient";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// local_clustering_coefficient(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = LocalClusteringCoefficientBindReplace;
 	}
 
