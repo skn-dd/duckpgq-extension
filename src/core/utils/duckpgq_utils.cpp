@@ -147,6 +147,11 @@ unique_ptr<SelectNode> CreateParamSelectNode(const shared_ptr<PropertyGraphTable
 	return select_node;
 }
 
+// WARNING: this emits an O(V^2) cross-join over the vertex table (every a<b
+// pair), so the pairwise similarity functions (jaccard/cosine/overlap/common-
+// neighbors/adamic-adar/preferential-attachment/resource-allocation) are
+// quadratic in vertex count and NOT bounded by CheckAlgorithmMemoryBudget.
+// Intended for small/medium graphs or filtered use (e.g. WHERE sim > t LIMIT k).
 unique_ptr<SelectNode> CreatePairwiseSelectNode(const shared_ptr<PropertyGraphTable> &edge_pg_entry,
                                                 const string &function_name, const string &function_alias) {
 	auto select_node = make_uniq<SelectNode>();

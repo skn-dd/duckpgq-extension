@@ -3,7 +3,6 @@
 #include "duckpgq_extension.hpp"
 #include "duckpgq/common.hpp"
 #include "duckpgq/core/module.hpp"
-#include <duckpgq_extension_callback.hpp>
 #include "duckdb/main/connection_manager.hpp"
 
 namespace duckdb {

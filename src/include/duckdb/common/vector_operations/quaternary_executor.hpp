@@ -3,7 +3,11 @@
 //
 // duckdb/common/vector_operations/quaternary_executor.hpp
 //
-//
+// VENDORED from the cwida/duckdb-pgq fork (tag v1.5.1) — mainline DuckDB has no
+// 4-ary vector executor, but the CSR builder's create_csr_edge needs one. To
+// regenerate when bumping DuckDB: copy this header from the matching duckdb-pgq
+// tag and re-drop its fork-only `duckdb/common/vector/{constant,flat}_vector.hpp`
+// includes (those types live in duckdb/common/types/vector.hpp on mainline).
 //===----------------------------------------------------------------------===//
 
 #pragma once

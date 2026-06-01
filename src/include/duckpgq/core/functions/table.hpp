@@ -42,10 +42,6 @@ struct CoreTableFunctions {
 	}
 
 private:
-	static void RegisterCreatePropertyGraphTableFunction(ExtensionLoader &loader);
-	static void RegisterMatchTableFunction(ExtensionLoader &loader);
-	static void RegisterDropPropertyGraphTableFunction(ExtensionLoader &loader);
-	static void RegisterDescribePropertyGraphTableFunction(ExtensionLoader &loader);
 	static void RegisterDegreeCentralityTableFunction(ExtensionLoader &loader);
 	static void RegisterTriangleCountTableFunction(ExtensionLoader &loader);
 	static void RegisterClosenessCentralityTableFunction(ExtensionLoader &loader);
@@ -75,10 +71,8 @@ private:
 	static void RegisterInDegreeCentralityTableFunction(ExtensionLoader &loader);
 	static void RegisterLouvainTableFunction(ExtensionLoader &loader);
 	static void RegisterLocalClusteringCoefficientTableFunction(ExtensionLoader &loader);
-	static void RegisterScanTableFunctions(ExtensionLoader &loader);
 	static void RegisterWeaklyConnectedComponentTableFunction(ExtensionLoader &loader);
 	static void RegisterPageRankTableFunction(ExtensionLoader &loader);
-	static void RegisterSummarizePropertyGraphTableFunction(ExtensionLoader &loader);
 };
 
 } // namespace duckdb

@@ -1,6 +1,9 @@
 [submodule "duckdb"]
 	path = duckdb
-	url = git@github.com:cwida/duckdb-pgq.git
+	# Stock mainline DuckDB (public, HTTPS) — pinned to a v1.5.1 commit. This
+	# extension builds against unmodified DuckDB; it no longer needs the
+	# cwida/duckdb-pgq fork.
+	url = https://github.com/duckdb/duckdb.git
 
 [submodule "extension-ci-tools"]
 	path = extension-ci-tools
