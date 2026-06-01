@@ -14,7 +14,9 @@ class PageRankFunction : public TableFunction {
 public:
 	PageRankFunction() {
 		name = "pagerank";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// pagerank(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = PageRankBindReplace;
 	}
 

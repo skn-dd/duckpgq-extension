@@ -17,7 +17,9 @@ class LabelPropagationFunction : public TableFunction {
 public:
 	LabelPropagationFunction() {
 		name = "label_propagation";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// label_propagation(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = LabelPropagationBindReplace;
 	}
 

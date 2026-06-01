@@ -14,7 +14,9 @@ class WeaklyConnectedComponentFunction : public TableFunction {
 public:
 	WeaklyConnectedComponentFunction() {
 		name = "weakly_connected_component";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// weakly_connected_component(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = WeaklyConnectedComponentBindReplace;
 	}
 

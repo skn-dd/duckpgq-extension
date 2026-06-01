@@ -17,7 +17,9 @@ class OverlapSimilarityFunction : public TableFunction {
 public:
 	OverlapSimilarityFunction() {
 		name = "overlap_similarity";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// overlap_similarity(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = OverlapSimilarityBindReplace;
 	}
 

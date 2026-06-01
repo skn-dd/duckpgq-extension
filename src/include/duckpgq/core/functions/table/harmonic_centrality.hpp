@@ -17,7 +17,8 @@ class HarmonicCentralityFunction : public TableFunction {
 public:
 	HarmonicCentralityFunction() {
 		name = "harmonic_centrality";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = HarmonicCentralityBindReplace;
 	}
 

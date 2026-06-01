@@ -17,7 +17,8 @@ class KatzCentralityFunction : public TableFunction {
 public:
 	KatzCentralityFunction() {
 		name = "katz_centrality";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = KatzCentralityBindReplace;
 	}
 

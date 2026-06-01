@@ -5,10 +5,9 @@ namespace duckdb {
 
 struct CoreTableFunctions {
 	static void Register(ExtensionLoader &loader) {
-		RegisterCreatePropertyGraphTableFunction(loader);
-		RegisterMatchTableFunction(loader);
-		RegisterDropPropertyGraphTableFunction(loader);
-		RegisterDescribePropertyGraphTableFunction(loader);
+		// All algorithm + path-finding table functions, decoupled to take
+		// edge/vertex tables directly (MakeEdgeSpec). Grammar table functions
+		// (CREATE/MATCH/DROP/DESCRIBE/scan/summarize) are excluded — stock DuckDB.
 		RegisterDegreeCentralityTableFunction(loader);
 		RegisterTriangleCountTableFunction(loader);
 		RegisterClosenessCentralityTableFunction(loader);
@@ -38,17 +37,12 @@ struct CoreTableFunctions {
 		RegisterInDegreeCentralityTableFunction(loader);
 		RegisterLouvainTableFunction(loader);
 		RegisterLocalClusteringCoefficientTableFunction(loader);
-		RegisterScanTableFunctions(loader);
-		RegisterSummarizePropertyGraphTableFunction(loader);
 		RegisterWeaklyConnectedComponentTableFunction(loader);
 		RegisterPageRankTableFunction(loader);
+		RegisterGraphMatchTableFunction(loader);
 	}
 
 private:
-	static void RegisterCreatePropertyGraphTableFunction(ExtensionLoader &loader);
-	static void RegisterMatchTableFunction(ExtensionLoader &loader);
-	static void RegisterDropPropertyGraphTableFunction(ExtensionLoader &loader);
-	static void RegisterDescribePropertyGraphTableFunction(ExtensionLoader &loader);
 	static void RegisterDegreeCentralityTableFunction(ExtensionLoader &loader);
 	static void RegisterTriangleCountTableFunction(ExtensionLoader &loader);
 	static void RegisterClosenessCentralityTableFunction(ExtensionLoader &loader);
@@ -78,10 +72,9 @@ private:
 	static void RegisterInDegreeCentralityTableFunction(ExtensionLoader &loader);
 	static void RegisterLouvainTableFunction(ExtensionLoader &loader);
 	static void RegisterLocalClusteringCoefficientTableFunction(ExtensionLoader &loader);
-	static void RegisterScanTableFunctions(ExtensionLoader &loader);
 	static void RegisterWeaklyConnectedComponentTableFunction(ExtensionLoader &loader);
 	static void RegisterPageRankTableFunction(ExtensionLoader &loader);
-	static void RegisterSummarizePropertyGraphTableFunction(ExtensionLoader &loader);
+	static void RegisterGraphMatchTableFunction(ExtensionLoader &loader);
 };
 
 } // namespace duckdb

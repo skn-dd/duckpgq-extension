@@ -1,6 +1,7 @@
+# Stock-DuckDB build: all 30 algorithm + path-finding table functions, decoupled
+# to take edge/vertex tables directly (MakeEdgeSpec). Grammar/property-graph
+# table functions (create/describe/drop/match/scan/summarize) are excluded.
 set(EXTENSION_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/create_property_graph.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/describe_property_graph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/degree_centrality.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/triangle_count.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/closeness_centrality.cpp
@@ -28,12 +29,10 @@ set(EXTENSION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/out_degree_centrality.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/in_degree_centrality.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/louvain.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/drop_property_graph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/local_clustering_coefficient.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/match.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pagerank.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pgq_scan.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/summarize_property_graph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/weakly_connected_component.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/graph_match.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../parser/pattern_parser.cpp
     ${EXTENSION_SOURCES}
     PARENT_SCOPE)

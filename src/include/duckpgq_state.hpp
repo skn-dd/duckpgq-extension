@@ -1,38 +1,26 @@
 #pragma once
 
 #include "duckpgq/common.hpp"
-#include "duckdb/common/case_insensitive_map.hpp"
-
 #include "duckpgq/core/utils/compressed_sparse_row.hpp"
-#include "duckdb/parser/parser_extension.hpp"
-#include "duckdb/parser/parsed_data/create_property_graph_info.hpp"
+
+#include <mutex>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace duckdb {
 
+// Stock-DuckDB build: DuckPGQState carries only the CSR cache used by the graph
+// algorithms / path-finding functions. The property-graph registry and parser-
+// extension state were dropped together with the SQL/PGQ grammar front-end —
+// graphs are described by table-function arguments, not registered objects.
 class DuckPGQState : public ClientContextState {
 public:
 	explicit DuckPGQState() {};
 
-	static void InitializeInternalTable(ClientContext &context);
 	void QueryEnd() override;
-	CreatePropertyGraphInfo *GetPropertyGraph(const string &pg_name);
 	CSR *GetCSR(int32_t id);
 
-	void RetrievePropertyGraphs(const shared_ptr<Connection> &context);
-	void ProcessPropertyGraphs(unique_ptr<MaterializedQueryResult> &property_graphs, bool is_vertex);
-	void PopulateEdgeSpecificFields(unique_ptr<DataChunk> &chunk, idx_t row_idx, PropertyGraphTable &table);
-	static void ExtractListValues(const Value &list_value, vector<string> &output);
-	void RegisterPropertyGraph(const shared_ptr<PropertyGraphTable> &table, const string &graph_name, bool is_vertex);
-
-public:
-	unique_ptr<ParserExtensionParseData> parse_data;
-	unordered_map<int32_t, unique_ptr<ParsedExpression>> transform_expression;
-	int32_t match_index = 0;
-
-	//! Property graphs that are registered
-	case_insensitive_map_t<unique_ptr<CreateInfo>> registered_property_graphs;
-
-	//! Used to build the CSR data structures required for path-finding queries
+	//! CSR data structures built for graph-algorithm / path-finding queries
 	std::unordered_map<int32_t, unique_ptr<CSR>> csr_list;
 	std::mutex csr_lock;
 	std::unordered_set<int32_t> csr_to_delete;

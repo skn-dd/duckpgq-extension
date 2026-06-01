@@ -17,7 +17,9 @@ class EccentricityFunction : public TableFunction {
 public:
 	EccentricityFunction() {
 		name = "eccentricity";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// eccentricity(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = EccentricityBindReplace;
 	}
 

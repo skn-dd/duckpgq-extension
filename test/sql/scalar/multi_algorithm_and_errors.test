@@ -1,0 +1,35 @@
+# name: test/sql/scalar/multi_algorithm_and_errors.test
+# description: Multiple graph algorithms in one query (unique csr_id) + bad-table/column errors
+# group: [scalar]
+
+require duckpgq
+
+statement ok
+CREATE TABLE v AS SELECT i id FROM range(0,6) t(i);
+
+statement ok
+CREATE TABLE e(src BIGINT, dst BIGINT); INSERT INTO e VALUES (0,1),(1,2),(2,0),(3,4),(4,5),(2,3);
+
+# Multiple CSR-building algorithms in ONE query must NOT collide on a shared CSR
+# slot (regression for the hardcoded csr_id=0 bug).
+query TI
+SELECT 'degree' t, count(*) n FROM degree_centrality('v','id','e','src','dst')
+UNION ALL SELECT 'pagerank', count(*) FROM pagerank('v','id','e','src','dst')
+UNION ALL SELECT 'wcc', count(*) FROM weakly_connected_component('v','id','e','src','dst')
+UNION ALL SELECT 'triangle', count(*) FROM triangle_count('v','id','e','src','dst')
+ORDER BY t;
+----
+degree	6
+pagerank	6
+triangle	6
+wcc	6
+
+# Negative: non-existent edge table -> catalog error.
+statement error
+SELECT * FROM pagerank('v','id','does_not_exist','src','dst');
+----
+
+# Negative: non-existent source column -> binder error.
+statement error
+SELECT * FROM pagerank('v','id','e','no_such_col','dst');
+----

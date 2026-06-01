@@ -17,7 +17,9 @@ class LouvainFunction : public TableFunction {
 public:
 	LouvainFunction() {
 		name = "louvain";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// louvain(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = LouvainBindReplace;
 	}
 

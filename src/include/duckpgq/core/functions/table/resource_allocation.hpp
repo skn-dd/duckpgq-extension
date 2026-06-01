@@ -17,7 +17,9 @@ class ResourceAllocationFunction : public TableFunction {
 public:
 	ResourceAllocationFunction() {
 		name = "resource_allocation";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// resource_allocation(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = ResourceAllocationBindReplace;
 	}
 

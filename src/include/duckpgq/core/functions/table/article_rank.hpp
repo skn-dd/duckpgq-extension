@@ -14,7 +14,8 @@ class ArticleRankFunction : public TableFunction {
 public:
 	ArticleRankFunction() {
 		name = "article_rank";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = ArticleRankBindReplace;
 	}
 

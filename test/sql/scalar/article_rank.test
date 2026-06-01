@@ -10,21 +10,11 @@ CREATE TABLE Student(id BIGINT, name VARCHAR);INSERT INTO Student VALUES (0, 'Da
 statement ok
 CREATE TABLE know(src BIGINT, dst BIGINT, createDate BIGINT);INSERT INTO know VALUES (0,1, 10), (0,2, 11), (0,3, 12), (3,0, 13), (1,2, 14), (1,3, 15), (2,3, 16), (4,3, 17);
 
-statement ok
--CREATE PROPERTY GRAPH pg
-VERTEX TABLES (
-    Student
-    )
-EDGE TABLES (
-    know    SOURCE KEY ( src ) REFERENCES Student ( id )
-            DESTINATION KEY ( dst ) REFERENCES Student ( id )
-    );
-
 # Vertex 3 has the highest in-degree (in-edges from 0,1,2,4) so ranks highest.
 # Vertex 0 receives rank back from the strong contributor 3 (out-degree 1).
 # Vertex 4 has no in-edges (only the teleport term) so ranks lowest.
 query I
-select id from article_rank(pg, student, know) order by round(article_rank, 9) desc, id;
+select id from article_rank('Student', 'id', 'know', 'src', 'dst') order by round(article_rank, 9) desc, id;
 ----
 3
 0
@@ -34,11 +24,11 @@ select id from article_rank(pg, student, know) order by round(article_rank, 9) d
 
 # All ArticleRank scores must be positive.
 query I
-select count(*) from article_rank(pg, student, know) where article_rank > 0;
+select count(*) from article_rank('Student', 'id', 'know', 'src', 'dst') where article_rank > 0;
 ----
 5
 
 query I
-select count(*) from article_rank(pg, student, know);
+select count(*) from article_rank('Student', 'id', 'know', 'src', 'dst');
 ----
 5

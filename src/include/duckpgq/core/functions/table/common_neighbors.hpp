@@ -17,7 +17,9 @@ class CommonNeighborsFunction : public TableFunction {
 public:
 	CommonNeighborsFunction() {
 		name = "common_neighbors";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// common_neighbors(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = CommonNeighborsBindReplace;
 	}
 

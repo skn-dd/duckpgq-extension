@@ -17,7 +17,9 @@ class JaccardSimilarityFunction : public TableFunction {
 public:
 	JaccardSimilarityFunction() {
 		name = "jaccard_similarity";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		// jaccard_similarity(vertex_table, vertex_id_col, edge_table, src_col, dst_col)
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = JaccardSimilarityBindReplace;
 	}
 

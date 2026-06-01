@@ -17,7 +17,8 @@ class EigenvectorCentralityFunction : public TableFunction {
 public:
 	EigenvectorCentralityFunction() {
 		name = "eigenvector_centrality";
-		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR};
+		arguments = {LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR, LogicalType::VARCHAR,
+		             LogicalType::VARCHAR};
 		bind_replace = EigenvectorCentralityBindReplace;
 	}
 
