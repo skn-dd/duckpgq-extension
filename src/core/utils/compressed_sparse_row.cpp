@@ -192,7 +192,7 @@ unique_ptr<SubqueryExpression> CreateDirectedCSRVertexSubquery(const shared_ptr<
 	auto count_create_vertex_expr = GetCountTable(edge_table->source_pg_table, prev_binding, edge_table->source_pk[0]);
 
 	vector<unique_ptr<ParsedExpression>> csr_vertex_children;
-	csr_vertex_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(0)));
+	csr_vertex_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(edge_table->csr_id)));
 	csr_vertex_children.push_back(std::move(count_create_vertex_expr));
 	csr_vertex_children.push_back(make_uniq<ColumnRefExpression>("dense_id", "sub"));
 	csr_vertex_children.push_back(make_uniq<ColumnRefExpression>("cnt", "sub"));
@@ -254,7 +254,7 @@ unique_ptr<SubqueryExpression> CreateUndirectedCSRVertexSubquery(const shared_pt
 	auto count_create_vertex_expr = GetCountTable(edge_table->source_pg_table, binding, edge_table->source_pk[0]);
 
 	vector<unique_ptr<ParsedExpression>> csr_vertex_children;
-	csr_vertex_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(0)));
+	csr_vertex_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(edge_table->csr_id)));
 	csr_vertex_children.push_back(std::move(count_create_vertex_expr));
 	csr_vertex_children.push_back(make_uniq<ColumnRefExpression>("dense_id", "sub"));
 	csr_vertex_children.push_back(make_uniq<ColumnRefExpression>("cnt", "sub"));
@@ -413,7 +413,7 @@ unique_ptr<CommonTableExpressionInfo> CreateUndirectedCSRCTE(const shared_ptr<Pr
 		select_node->cte_map.map["edges_cte"] = MakeEdgesCTE(edge_table);
 	}
 
-	auto csr_edge_id_constant = make_uniq<ConstantExpression>(Value::INTEGER(0));
+	auto csr_edge_id_constant = make_uniq<ConstantExpression>(Value::INTEGER(edge_table->csr_id));
 	auto count_create_edge_select =
 	    GetCountTable(edge_table->source_pg_table, edge_table->source_reference, edge_table->source_pk[0]);
 
@@ -548,7 +548,7 @@ unique_ptr<SubqueryExpression> GetCountEdgeTable(const shared_ptr<PropertyGraphT
 unique_ptr<CommonTableExpressionInfo> CreateDirectedCSRCTE(const shared_ptr<PropertyGraphTable> &edge_table,
                                                            const string &prev_binding, const string &edge_binding,
                                                            const string &next_binding) {
-	auto csr_edge_id_constant = make_uniq<ConstantExpression>(Value::INTEGER(0));
+	auto csr_edge_id_constant = make_uniq<ConstantExpression>(Value::INTEGER(edge_table->csr_id));
 	auto count_create_edge_select = GetCountTable(edge_table->source_pg_table, prev_binding, edge_table->source_pk[0]);
 
 	auto cast_subquery_expr = CreateDirectedCSRVertexSubquery(edge_table, prev_binding);

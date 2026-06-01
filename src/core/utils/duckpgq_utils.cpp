@@ -1,5 +1,6 @@
 #include "duckpgq/core/utils/duckpgq_utils.hpp"
 #include "duckpgq/common.hpp"
+#include <atomic>
 #include "duckdb/parser/statement/copy_statement.hpp"
 #include "duckdb/storage/buffer_manager.hpp"
 
@@ -50,6 +51,14 @@ void CheckAlgorithmMemoryBudget(ClientContext &context, idx_t estimated_bytes, c
 // caller-supplied (vertex_table, vertex_id, edge_table, src_col, dst_col).
 // Source and destination vertices are the same vertex table; the CSR builders
 // disambiguate the self-join via the "src"/"dst" bindings.
+// Process-wide CSR id allocator. Each MakeEdgeSpec call (i.e. each algorithm
+// invocation) gets a fresh id, so multiple graph-algorithm calls in one query —
+// or concurrent queries — never share a CSR slot in DuckPGQState::csr_list.
+static int32_t GetNextCsrId() {
+	static std::atomic<int32_t> counter{0};
+	return counter.fetch_add(1, std::memory_order_relaxed);
+}
+
 shared_ptr<PropertyGraphTable> MakeEdgeSpec(const string &vertex_table, const string &vertex_id,
                                             const string &edge_table, const string &src_col, const string &dst_col) {
 	auto vsrc = make_shared_ptr<PropertyGraphTable>();
@@ -70,6 +79,7 @@ shared_ptr<PropertyGraphTable> MakeEdgeSpec(const string &vertex_table, const st
 	e->destination_reference = vertex_table;
 	e->source_pg_table = std::move(vsrc);
 	e->destination_pg_table = std::move(vdst);
+	e->csr_id = GetNextCsrId();
 	return e;
 }
 
@@ -85,7 +95,7 @@ unique_ptr<SelectNode> CreateSelectNode(const shared_ptr<PropertyGraphTable> &ed
 	auto cte_col_ref = make_uniq<ColumnRefExpression>("temp", "__x");
 
 	vector<unique_ptr<ParsedExpression>> function_children;
-	function_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(0)));
+	function_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(edge_pg_entry->csr_id)));
 	function_children.push_back(make_uniq<ColumnRefExpression>("rowid", edge_pg_entry->source_reference));
 	auto function = make_uniq<FunctionExpression>(function_name, std::move(function_children));
 
@@ -123,7 +133,7 @@ unique_ptr<SelectNode> CreateParamSelectNode(const shared_ptr<PropertyGraphTable
 	auto cte_col_ref = make_uniq<ColumnRefExpression>("temp", "__x");
 
 	vector<unique_ptr<ParsedExpression>> function_children;
-	function_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(0)));
+	function_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(edge_pg_entry->csr_id)));
 	function_children.push_back(make_uniq<ColumnRefExpression>("rowid", edge_pg_entry->source_reference));
 	function_children.push_back(make_uniq<ConstantExpression>(extra_arg));
 	auto function = make_uniq<FunctionExpression>(function_name, std::move(function_children));
@@ -166,7 +176,7 @@ unique_ptr<SelectNode> CreatePairwiseSelectNode(const shared_ptr<PropertyGraphTa
 	select_expression.emplace_back(std::move(b_pk));
 
 	vector<unique_ptr<ParsedExpression>> function_children;
-	function_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(0)));
+	function_children.push_back(make_uniq<ConstantExpression>(Value::INTEGER(edge_pg_entry->csr_id)));
 	function_children.push_back(make_uniq<ColumnRefExpression>("rowid", "a"));
 	function_children.push_back(make_uniq<ColumnRefExpression>("rowid", "b"));
 	auto function = make_uniq<FunctionExpression>(function_name, std::move(function_children));

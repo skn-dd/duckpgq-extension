@@ -40,6 +40,12 @@ public:
 	bool no_columns = false;
 	bool is_vertex_table = false;
 
+	//! Unique CSR id for this edge-spec, assigned by MakeEdgeSpec. Threads the
+	//! same id into both the CSR builder (create_csr_edge/vertex) and the
+	//! algorithm call so multiple algorithm calls in one query don't collide on
+	//! a shared CSR slot.
+	int32_t csr_id = 0;
+
 	string discriminator;
 
 	vector<string> source_fk;
