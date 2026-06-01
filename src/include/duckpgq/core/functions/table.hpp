@@ -39,6 +39,7 @@ struct CoreTableFunctions {
 		RegisterLocalClusteringCoefficientTableFunction(loader);
 		RegisterWeaklyConnectedComponentTableFunction(loader);
 		RegisterPageRankTableFunction(loader);
+		RegisterGraphMatchTableFunction(loader);
 	}
 
 private:
@@ -73,6 +74,7 @@ private:
 	static void RegisterLocalClusteringCoefficientTableFunction(ExtensionLoader &loader);
 	static void RegisterWeaklyConnectedComponentTableFunction(ExtensionLoader &loader);
 	static void RegisterPageRankTableFunction(ExtensionLoader &loader);
+	static void RegisterGraphMatchTableFunction(ExtensionLoader &loader);
 };
 
 } // namespace duckdb
