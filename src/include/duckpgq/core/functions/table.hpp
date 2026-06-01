@@ -5,10 +5,10 @@ namespace duckdb {
 
 struct CoreTableFunctions {
 	static void Register(ExtensionLoader &loader) {
-		RegisterCreatePropertyGraphTableFunction(loader);
-		RegisterMatchTableFunction(loader);
-		RegisterDropPropertyGraphTableFunction(loader);
-		RegisterDescribePropertyGraphTableFunction(loader);
+		// SQL/PGQ grammar table functions (CREATE/MATCH/DROP/DESCRIBE PROPERTY
+		// GRAPH, scan, summarize) are intentionally NOT registered — this
+		// extension targets stock DuckDB and exposes only graph algorithms +
+		// path-finding as table functions over edge/vertex tables.
 		RegisterDegreeCentralityTableFunction(loader);
 		RegisterTriangleCountTableFunction(loader);
 		RegisterClosenessCentralityTableFunction(loader);
@@ -38,8 +38,6 @@ struct CoreTableFunctions {
 		RegisterInDegreeCentralityTableFunction(loader);
 		RegisterLouvainTableFunction(loader);
 		RegisterLocalClusteringCoefficientTableFunction(loader);
-		RegisterScanTableFunctions(loader);
-		RegisterSummarizePropertyGraphTableFunction(loader);
 		RegisterWeaklyConnectedComponentTableFunction(loader);
 		RegisterPageRankTableFunction(loader);
 	}
